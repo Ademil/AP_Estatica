@@ -1,1 +1,1 @@
-# DOSE_CONTROLADA
+# Estática
