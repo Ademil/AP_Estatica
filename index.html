@@ -1,420 +1,2673 @@
 <!DOCTYPE html>
-<html lang="pt-pt">
+<html lang="pt-BR" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>APAVAN - Dose Controlada</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f8fafc;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-        }
-
-        .btn-confirm {
-            min-height: 48px;
-            transition: all 0.2s ease;
-        }
-
-        .btn-confirm:active {
-            transform: scale(0.96);
-        }
-
-        .card-med {
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .freq-btn.active {
-            background-color: #facc15 !important;
-            color: #000 !important;
-            border-color: #eab308 !important;
-        }
-
-        .tag-manha { background-color: #fef3c7; color: #92400e; }
-        .tag-tarde { background-color: #ffedd5; color: #9a3412; }
-        .tag-noite { background-color: #e2e8f0; color: #1e293b; }
-        .tag-madrugada { background-color: #0f172a; color: #f1f5f9; }
-
-        .whatsapp-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            color: #25D366;
-            font-weight: 900;
-            text-decoration: none;
-            font-size: 10px;
-        }
-
-        .site-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            color: #4f46e5;
-            font-weight: 900;
-            text-decoration: none;
-            font-size: 10px;
-        }
-
-        .med-group-header {
-            border-left: 8px solid #facc15;
-        }
-    </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>APavan Estática 3D — Simulador de Estática Aplicada</title>
+<meta name="theme-color" content="#0b1626">
+<meta name="description" content="Simulador interativo de estática aplicada à engenharia civil: forças, momentos, vigas, treliças e sistemas espaciais.">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230b1626'/%3E%3Cpath d='M12 50 L32 14 L52 50' stroke='%2322d3ee' stroke-width='5' fill='none'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#0b1626; --bg2:#101f33; --panel:#132540; --panel2:#182e4d;
+  --line:#23405f; --txt:#e6eefb; --txt2:#9db2cc;
+  --accent:#22d3ee; --accent2:#38bdf8; --ok:#34d399; --warn:#fbbf24; --err:#f87171;
+  --tension:#38bdf8; --compression:#fb923c;
+  --shadow:0 8px 24px rgba(0,0,0,.35);
+  --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+html[data-theme="light"]{
+  --bg:#eef3fa; --bg2:#ffffff; --panel:#ffffff; --panel2:#f3f7fd;
+  --line:#c9d8ea; --txt:#0b1626; --txt2:#4a6180;
+  --accent:#0891b2; --accent2:#0284c7; --ok:#059669; --warn:#b45309; --err:#dc2626;
+  --shadow:0 6px 18px rgba(15,40,80,.12);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%);
+  background-attachment:fixed;
+  color:var(--txt);
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;
+  font-size:15px; line-height:1.5; -webkit-text-size-adjust:100%;
+  min-height:100vh;
+}
+header.top{
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+  padding:10px 16px;background:linear-gradient(90deg,var(--panel),var(--panel2));
+  border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50;box-shadow:var(--shadow);
+}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.4px}
+.logo .logo-img{
+  height:42px;width:auto;border-radius:8px;object-fit:contain;
+  border:1px solid var(--accent);background:var(--bg2);
+}
+.logo small{display:block;font-size:11px;font-weight:500;color:var(--txt2);letter-spacing:.6px}
+header.top .spacer{flex:1}
+header.top .badge{font-size:11px;color:var(--txt2);border:1px solid var(--line);padding:3px 8px;border-radius:99px}
+nav.tabs{
+  display:flex;gap:6px;overflow-x:auto;padding:8px 12px;
+  background:var(--panel);border-bottom:1px solid var(--line);
+  position:sticky;top:59px;z-index:49;scrollbar-width:thin;
+}
+nav.tabs button{
+  flex:0 0 auto;background:transparent;border:1px solid transparent;color:var(--txt2);
+  padding:8px 14px;border-radius:9px;cursor:pointer;font-size:14px;font-weight:600;white-space:nowrap;
+  transition:.15s;
+}
+nav.tabs button:hover{color:var(--txt);background:var(--panel2)}
+nav.tabs button.active{color:#04121f;background:linear-gradient(135deg,var(--accent),var(--accent2));border-color:var(--accent)}
+main{padding:16px;max-width:1500px;margin:0 auto}
+section.view{display:none;animation:fade .18s ease}
+section.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.grid{display:grid;gap:14px}
+.cols-2{grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}
+.cols-3{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+.card{
+  background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  padding:14px;box-shadow:var(--shadow);
+}
+.card h2{margin:0 0 4px;font-size:16px;letter-spacing:.3px}
+.card h3{margin:14px 0 6px;font-size:14px;color:var(--accent);letter-spacing:.5px;text-transform:uppercase}
+.card p.sub{margin:0 0 12px;color:var(--txt2);font-size:13px}
+.hero{
+  background:radial-gradient(1000px 400px at 15% -20%,rgba(34,211,238,.18),transparent 60%),var(--panel);
+  border:1px solid var(--line);border-radius:18px;padding:26px;box-shadow:var(--shadow);
+}
+.hero h1{margin:0;font-size:clamp(24px,4vw,40px);letter-spacing:-.5px;
+  background:linear-gradient(100deg,var(--txt),var(--accent));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:var(--txt2);max-width:760px;margin:10px 0 0}
+.pill{display:inline-block;font-size:11px;padding:3px 9px;border-radius:99px;border:1px solid var(--line);color:var(--txt2);margin:0 6px 6px 0}
+label.f{display:block;font-size:12px;color:var(--txt2);margin:0 0 3px;font-weight:600}
+input,select,textarea{
+  background:var(--panel2);border:1px solid var(--line);color:var(--txt);
+  border-radius:8px;padding:7px 9px;font-size:14px;font-family:inherit;width:100%;
+}
+input[type=number]{font-family:var(--mono)}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:-1px;border-color:var(--accent)}
+button.btn{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));color:#04121f;border:0;
+  padding:9px 16px;border-radius:9px;font-weight:700;cursor:pointer;font-size:14px;letter-spacing:.2px;
+  transition:.15s;
+}
+button.btn:hover{filter:brightness(1.1)}
+button.btn:active{transform:translateY(1px)}
+button.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--txt)}
+button.btn.ghost:hover{background:var(--panel2);border-color:var(--accent)}
+button.btn.danger{background:transparent;border:1px solid var(--err);color:var(--err)}
+button.btn.sm{padding:5px 10px;font-size:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
+.row > *{flex:1 1 110px;min-width:0}
+.row > .fixed{flex:0 0 auto}
+canvas{display:block;width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:10px;touch-action:none}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:6px 8px;text-align:left;border-bottom:1px solid var(--line)}
+th{color:var(--txt2);font-size:11.5px;text-transform:uppercase;letter-spacing:.5px;font-weight:700}
+td.num,th.num{text-align:right;font-family:var(--mono)}
+tr:last-child td{border-bottom:0}
+.tbl-wrap{overflow-x:auto}
+.load-card{border:1px solid var(--line);border-radius:10px;padding:9px;margin-bottom:8px;background:var(--panel2)}
+.load-card .lc-head{display:flex;gap:8px;align-items:center;margin-bottom:7px}
+.load-card .lc-head select{flex:1}
+.load-card .lc-body{display:grid;grid-template-columns:repeat(auto-fit,minmax(84px,1fr));gap:7px}
+.hidden{display:none !important}
+.tag{font-size:11px;padding:2px 7px;border-radius:99px;font-weight:700}
+.tag.ok{background:rgba(52,211,153,.16);color:var(--ok);border:1px solid rgba(52,211,153,.4)}
+.tag.err{background:rgba(248,113,113,.16);color:var(--err);border:1px solid rgba(248,113,113,.4)}
+.tag.warn{background:rgba(251,191,36,.16);color:var(--warn);border:1px solid rgba(251,191,36,.4)}
+.msg{padding:9px 12px;border-radius:9px;font-size:13px;margin:9px 0;border:1px solid}
+.msg.ok{border-color:rgba(52,211,153,.45);background:rgba(52,211,153,.1);color:var(--ok)}
+.msg.err{border-color:rgba(248,113,113,.45);background:rgba(248,113,113,.1);color:var(--err)}
+.msg.warn{border-color:rgba(251,191,36,.45);background:rgba(251,191,36,.1);color:var(--warn)}
+.msg.info{border-color:var(--line);background:var(--panel2);color:var(--txt2)}
+details.step{border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:var(--panel2)}
+details.step summary{cursor:pointer;padding:9px 12px;font-weight:700;font-size:13.5px;list-style:none}
+details.step summary::-webkit-details-marker{display:none}
+details.step summary::before{content:"▸ ";color:var(--accent)}
+details.step[open] summary::before{content:"▾ "}
+details.step .body{padding:4px 12px 12px;font-size:13px;color:var(--txt)}
+.mono{font-family:var(--mono);font-size:12.5px}
+.kv{display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-size:13px}
+.kv .k{color:var(--txt2)}
+.kv .v{font-family:var(--mono);text-align:right}
+.topic{border:1px solid var(--line);border-radius:10px;padding:11px;background:var(--panel2);margin-bottom:8px}
+.topic h4{margin:0 0 4px;font-size:14px;color:var(--accent)}
+.topic .fx{font-family:var(--mono);font-size:12.5px;background:rgba(34,211,238,.08);border-left:3px solid var(--accent);padding:5px 9px;border-radius:5px;margin:6px 0}
+.topic p{margin:4px 0;font-size:13px;color:var(--txt2)}
+.topic .ex{font-size:12.5px;color:var(--txt);background:rgba(52,211,153,.08);border-left:3px solid var(--ok);padding:5px 9px;border-radius:5px;margin-top:6px}
+footer{padding:22px 16px 40px;text-align:center;color:var(--txt2);font-size:12px}
+.toast{
+  position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--panel);border:1px solid var(--accent);color:var(--txt);padding:10px 18px;
+  border-radius:10px;box-shadow:var(--shadow);z-index:200;opacity:0;transition:.25s;font-size:13px;max-width:90vw;
+}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+@media (max-width:640px){
+  main{padding:10px}
+  nav.tabs{top:auto;position:sticky;top:57px}
+  .hero{padding:18px}
+  header.top .badge{display:none}
+}
+@media print{
+  header.top,nav.tabs,footer,.no-print{display:none !important}
+  body{background:#fff;color:#000}
+  .card,.hero{border:1px solid #bbb;box-shadow:none;background:#fff;color:#000;break-inside:avoid}
+  section.view{display:none !important}
+  section.view.active{display:block !important}
+  canvas{background:#fff;border:1px solid #bbb}
+  @page{size:A4;margin:14mm}
+}
+</style>
 </head>
-<body class="min-h-screen pb-20">
+<body>
 
-    <header class="bg-yellow-400 text-black p-5 sticky top-0 z-50 shadow-md">
-        <div class="max-w-md mx-auto flex justify-between items-center">
-            <div>
-                <h1 class="text-2xl font-black tracking-tighter uppercase">APAVAN</h1>
-                <p class="text-[10px] font-bold opacity-70 uppercase tracking-widest">Dose Controlada</p>
-            </div>
-            <button onclick="openModal()" class="bg-black text-white px-5 py-2 rounded-2xl font-black shadow-md active:scale-95 transition-transform text-sm">
-                + NOVO
-            </button>
-        </div>
-    </header>
+<header class="top">
+  <div class="logo">
+    <img src="logo.png" alt="Logo APavan" class="logo-img">
+    <div>APavan Estática 3D<small>Engenharia e Consultoria</small></div>
+  </div>
+  <div class="spacer"></div>
+  <span class="badge" id="verBadge">motor 1.0.0</span>
+  <button class="btn ghost sm" id="btnTheme" title="Alternar tema">◐ Tema</button>
+</header>
 
-    <main class="max-w-md mx-auto p-4 space-y-6">
-        
-        <!-- Alertas de Stock -->
-        <div id="stock-alerts" class="hidden space-y-3">
-            <h2 class="text-red-600 font-extrabold flex items-center gap-2 text-lg uppercase tracking-tight">
-                <span>⚠️</span> Repor Estoque Agora:
-            </h2>
-            <div id="low-stock-list" class="space-y-3"></div>
-        </div>
+<nav class="tabs" id="tabs">
+  <button data-view="home" class="active">Início</button>
+  <button data-view="fund">Fundamentos</button>
+  <button data-view="forces">Forças &amp; Momentos</button>
+  <button data-view="beam">Vigas</button>
+  <button data-view="truss">Treliças</button>
+  <button data-view="space">3D</button>
+  <button data-view="game">Desafios</button>
+  <button data-view="tests">Testes</button>
+  <button data-view="report">Relatório</button>
+</nav>
 
-        <!-- Lista Organizada por Medicamento (Capítulos) -->
-        <div class="space-y-4">
-            <h2 class="text-slate-900 font-black text-xl flex items-center gap-2 uppercase italic tracking-tighter">
-                Planos de Tratamento
-            </h2>
-            <div id="med-groups-container" class="space-y-8">
-                <div class="text-center py-20 text-slate-400 italic font-medium text-sm">A carregar dados...</div>
-            </div>
-        </div>
-    </main>
+<main>
 
-    <!-- Modal de Registo -->
-    <div id="modal-form" class="fixed inset-0 bg-black/60 hidden z-[100] flex items-end sm:items-center justify-center p-4">
-        <div class="bg-white w-full max-w-md rounded-t-[2.5rem] sm:rounded-[2.5rem] p-7 space-y-5 max-h-[95vh] overflow-y-auto shadow-2xl">
-            <div class="flex justify-between items-center">
-                <h2 class="text-2xl font-black text-slate-900 uppercase italic">Novo Registo</h2>
-                <button onclick="closeModal()" class="text-slate-300 text-4xl p-2 hover:text-slate-600 transition-colors">&times;</button>
-            </div>
-            
-            <form id="form-medication" class="space-y-4">
-                <div>
-                    <label class="block text-indigo-600 font-black text-[10px] mb-1 uppercase tracking-widest">Identificação do Paciente</label>
-                    <input type="text" id="patientName" required class="w-full p-4 bg-indigo-50 border-2 border-indigo-100 rounded-2xl text-lg font-bold outline-none focus:ring-4 focus:ring-yellow-400/50 transition-all uppercase" placeholder="NOME DO PACIENTE">
-                </div>
+<!-- ===================== INÍCIO ===================== -->
+<section class="view active" id="view-home">
+  <div class="hero">
+    <h1>APavan Estática 3D</h1>
+    <p style="font-size:16px;color:var(--txt)">Simulador de Estática Aplicada à Engenharia Civil.</p>
+    <p>“Construa, aplique cargas, visualize o equilíbrio e compreenda o comportamento dos sistemas estruturais.”</p>
+    <div style="margin-top:14px">
+      <span class="pill">SI — kN, m, kN·m</span>
+      <span class="pill">Offline após 1º carregamento (PWA)</span>
+      <span class="pill">Memória de cálculo passo a passo</span>
+      <span class="pill">Testes com solução analítica</span>
+    </div>
+  </div>
 
-                <div>
-                    <label class="block text-slate-500 font-bold text-[10px] mb-1 uppercase tracking-widest">Nome do Medicamento</label>
-                    <input type="text" id="name" required class="w-full p-4 bg-slate-100 rounded-2xl text-lg font-bold outline-none focus:ring-4 focus:ring-yellow-400/50 border-none transition-all uppercase" placeholder="EX: DIPIRONA">
-                </div>
+  <div class="grid cols-3" style="margin-top:14px">
+    <div class="card">
+      <h2>Forças &amp; Momentos</h2>
+      <p class="sub">Cadastre forças com intensidade, ângulo e ponto de aplicação. Obtenha resultante, momento em relação à origem e redução força-binário.</p>
+      <button class="btn" onclick="switchView('forces')">Abrir módulo</button>
+    </div>
+    <div class="card">
+      <h2>Vigas e Reações</h2>
+      <p class="sub">Vigas biapoiadas, em balanço, com extremidade em balanço, cargas concentradas, distribuídas e momentos. Diagramas N, V e M.</p>
+      <button class="btn" onclick="switchView('beam')">Abrir módulo</button>
+    </div>
+    <div class="card">
+      <h2>Treliças Planas</h2>
+      <p class="sub">Nós, barras, apoios e cargas nodais. Solução por equilíbrio nodal (método dos nós) com verificação de equilíbrio global e nodal.</p>
+      <button class="btn" onclick="switchView('truss')">Abrir módulo</button>
+    </div>
+    <div class="card">
+      <h2>Sistemas Espaciais 3D</h2>
+      <p class="sub">Forças tridimensionais, momento vetorial M = r × F, resultante espacial e visualização com rotação e zoom.</p>
+      <button class="btn" onclick="switchView('space')">Abrir módulo</button>
+    </div>
+    <div class="card">
+      <h2>Desafios</h2>
+      <p class="sub">Exercícios gerados com semente reproduzível, tolerância configurável, dicas e resolução passo a passo.</p>
+      <button class="btn" onclick="switchView('game')">Abrir módulo</button>
+    </div>
+    <div class="card">
+      <h2>Testes de Validação</h2>
+      <p class="sub">Casos com solução analítica conhecida, comparados automaticamente pelo motor de cálculo.</p>
+      <button class="btn" onclick="switchView('tests')">Executar testes</button>
+    </div>
+  </div>
 
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-slate-500 font-bold text-[10px] mb-1 uppercase tracking-widest">Data Início</label>
-                        <input type="date" id="startDate" required class="w-full p-4 bg-slate-100 rounded-2xl font-bold outline-none focus:ring-4 focus:ring-yellow-400/50 border-none transition-all">
-                    </div>
-                    <div>
-                        <label class="block text-slate-500 font-bold text-[10px] mb-1 uppercase tracking-widest">Dose (Ex: 1 comp)</label>
-                        <input type="text" id="dose" required class="w-full p-4 bg-slate-100 rounded-2xl font-bold outline-none" placeholder="1 comp.">
-                    </div>
-                </div>
+  <div class="card" style="margin-top:14px">
+    <h2>Aviso de uso</h2>
+    <p class="sub" style="margin:0">
+      Esta ferramenta é destinada a <strong>ensino, simulação e apoio à análise</strong>.
+      Os resultados referem-se à <strong>estática idealizada</strong> e <strong>não substituem</strong> verificações de resistência,
+      estabilidade, deformação, durabilidade ou requisitos normativos. O aplicativo <strong>não declara conformidade
+      com normas técnicas brasileiras</strong> e não emite documento de responsabilidade técnica.
+    </p>
+  </div>
+</section>
 
-                <div>
-                    <label class="block text-slate-500 font-bold text-[10px] mb-1 uppercase tracking-widest">Stock Inicial (Total)</label>
-                    <input type="number" id="stock" required min="1" class="w-full p-4 bg-slate-100 rounded-2xl text-lg font-bold outline-none" placeholder="10">
-                </div>
+<!-- ===================== FUNDAMENTOS ===================== -->
+<section class="view" id="view-fund">
+  <div class="card">
+    <h2>Módulo A — Fundamentos da Estática</h2>
+    <p class="sub">Teoria resumida, fórmula-chave e exemplo numérico verificado pelo motor de cálculo.</p>
+    <div id="fundList"></div>
+  </div>
+</section>
 
-                <div class="bg-slate-50 p-4 rounded-3xl border border-dashed border-slate-200 space-y-3">
-                    <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Dados do Fornecedor</p>
-                    <input type="text" id="vendorName" class="w-full p-3 bg-white rounded-xl text-sm font-bold outline-none" placeholder="NOME DO FORNECEDOR/FARMÁCIA">
-                    <input type="text" id="vendorAddr" class="w-full p-3 bg-white rounded-xl text-sm font-bold outline-none" placeholder="ENDEREÇO">
-                    <input type="tel" id="vendorTel" class="w-full p-3 bg-white rounded-xl text-sm font-bold outline-none" placeholder="WHATSAPP (COM DDD)">
-                    <input type="url" id="vendorUrl" class="w-full p-3 bg-white rounded-xl text-sm font-bold outline-none" placeholder="SITE (HTTPS://...)">
-                </div>
-
-                <div>
-                    <label class="block text-slate-500 font-bold text-[10px] mb-2 uppercase tracking-widest text-center">Frequência Diária</label>
-                    <div class="grid grid-cols-4 gap-2">
-                        <button type="button" onclick="setFrequency(1)" class="freq-btn border-2 border-slate-200 py-3 rounded-2xl font-black text-slate-400 bg-white" id="freq-1">1x</button>
-                        <button type="button" onclick="setFrequency(2)" class="freq-btn border-2 border-slate-200 py-3 rounded-2xl font-black text-slate-400 bg-white" id="freq-2">2x</button>
-                        <button type="button" onclick="setFrequency(3)" class="freq-btn border-2 border-slate-200 py-3 rounded-2xl font-black text-slate-400 bg-white" id="freq-3">3x</button>
-                        <button type="button" onclick="setFrequency(4)" class="freq-btn border-2 border-slate-200 py-3 rounded-2xl font-black text-slate-400 bg-white" id="freq-4">4x</button>
-                    </div>
-                </div>
-
-                <div id="time-inputs" class="space-y-3"></div>
-
-                <button type="submit" class="w-full bg-yellow-400 text-black font-black py-5 rounded-[1.5rem] text-xl shadow-lg active:bg-yellow-500 transition-all uppercase tracking-widest mt-2">
-                    GUARDAR TRATAMENTO
-                </button>
-            </form>
-        </div>
+<!-- ===================== FORÇAS ===================== -->
+<section class="view" id="view-forces">
+  <div class="grid cols-2">
+    <div class="card">
+      <h2>Cadastro de forças</h2>
+      <p class="sub">Convenção: X positivo para a direita, Y positivo para cima, Z positivo saindo do plano. Ângulo medido em relação ao eixo +X, sentido anti-horário.</p>
+      <div id="forceList"></div>
+      <div class="row" style="margin-top:8px">
+        <button class="btn ghost" id="btnAddForce">+ Adicionar força</button>
+        <button class="btn" id="btnSolveForces">Calcular</button>
+      </div>
     </div>
 
-    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-8 py-4 rounded-full shadow-2xl opacity-0 transition-opacity z-[200] font-black pointer-events-none text-center text-sm uppercase"></div>
+    <div class="card">
+      <h2>Resultados</h2>
+      <div id="forceOut"><p class="sub">Cadastre forças e clique em Calcular.</p></div>
+    </div>
+  </div>
 
-    <script>
-        let meds = [];
-        const STORAGE_KEY = 'cimed_v13_reset';
+  <div class="card" style="margin-top:14px">
+    <h2>Visualização vetorial (plano XY)</h2>
+    <canvas id="cvForces" style="height:380px"></canvas>
+  </div>
+</section>
 
-        function init() {
-            try {
-                const data = localStorage.getItem(STORAGE_KEY);
-                meds = data ? JSON.parse(data) : [];
-                checkDailyReset();
-                render();
-            } catch (e) { meds = []; }
+<!-- ===================== VIGAS ===================== -->
+<section class="view" id="view-beam">
+  <div class="grid cols-2">
+    <div class="card">
+      <h2>Modelo da viga</h2>
+      <div class="row">
+        <div><label class="f">Comprimento L (m)</label><input type="number" id="beamL" value="6" step="0.1" min="0.1"></div>
+        <div class="fixed" style="display:flex;align-items:flex-end">
+          <label style="display:flex;gap:6px;align-items:center;font-size:12px;color:var(--txt2);height:36px">
+            <input type="checkbox" id="beamSelf" style="width:auto"> Peso próprio (kN/m)
+          </label>
+        </div>
+        <div><label class="f">q próprio (kN/m)</label><input type="number" id="beamSelfQ" value="0" step="0.1"></div>
+      </div>
+
+      <h3>Apoios</h3>
+      <div id="beamSupports"></div>
+      <button class="btn ghost sm" id="btnAddSupport">+ Apoio</button>
+
+      <h3>Cargas</h3>
+      <div id="beamLoads"></div>
+      <div class="row" style="margin-top:4px">
+        <button class="btn ghost sm" id="btnAddLoad">+ Carga</button>
+      </div>
+
+      <div class="row" style="margin-top:12px">
+        <button class="btn" id="btnSolveBeam">Calcular viga</button>
+        <button class="btn ghost" id="btnBeamExample">Exemplo: biapoiada + carga central</button>
+        <button class="btn ghost" id="btnBeamClear">Limpar cargas</button>
+      </div>
+      <div id="beamMsg"></div>
+    </div>
+
+    <div class="card">
+      <h2>Diagrama de corpo livre e reações</h2>
+      <canvas id="cvBeam" style="height:300px"></canvas>
+      <div id="beamReactions"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h2>Diagramas de esforços internos</h2>
+    <p class="sub">Convenções: V(x) = soma das forças verticais à esquerda da seção (positivo para cima). M(x) = −[Σ(x<sub>i</sub>−x)·F<sub>y,i</sub> + ΣM<sub>0</sub>] das forças à esquerda, positivo quando traciona a fibra inferior (momento positivo/sagging). N(x) = −ΣF<sub>x</sub> à esquerda (tração positiva).</p>
+    <canvas id="cvV" style="height:220px;margin-bottom:10px"></canvas>
+    <canvas id="cvM" style="height:220px;margin-bottom:10px"></canvas>
+    <canvas id="cvN" style="height:170px"></canvas>
+    <div id="beamExtremes"></div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h2>Memória de cálculo</h2>
+    <div id="beamMemory"><p class="sub">Execute o cálculo para gerar a memória.</p></div>
+  </div>
+</section>
+
+<!-- ===================== TRELIÇAS ===================== -->
+<section class="view" id="view-truss">
+  <div class="grid cols-2">
+    <div class="card">
+      <h2>Nós</h2>
+      <div class="tbl-wrap"><table id="tblNodes"><thead><tr><th>#</th><th class="num">x (m)</th><th class="num">y (m)</th><th></th></tr></thead><tbody></tbody></table></div>
+      <button class="btn ghost sm" id="btnAddNode" style="margin-top:6px">+ Nó</button>
+
+      <h2 style="margin-top:16px">Barras</h2>
+      <div class="tbl-wrap"><table id="tblBars"><thead><tr><th>#</th><th>Nó i</th><th>Nó j</th><th></th></tr></thead><tbody></tbody></table></div>
+      <button class="btn ghost sm" id="btnAddBar" style="margin-top:6px">+ Barra</button>
+
+      <h2 style="margin-top:16px">Apoios</h2>
+      <div class="tbl-wrap"><table id="tblSup"><thead><tr><th>Nó</th><th>Tipo</th><th></th></tr></thead><tbody></tbody></table></div>
+      <button class="btn ghost sm" id="btnAddSup" style="margin-top:6px">+ Apoio</button>
+
+      <h2 style="margin-top:16px">Cargas nodais</h2>
+      <div class="tbl-wrap"><table id="tblLoads"><thead><tr><th>Nó</th><th class="num">Fx (kN)</th><th class="num">Fy (kN)</th><th></th></tr></thead><tbody></tbody></table></div>
+      <button class="btn ghost sm" id="btnAddTrussLoad" style="margin-top:6px">+ Carga</button>
+
+      <div class="row" style="margin-top:14px">
+        <button class="btn" id="btnSolveTruss">Calcular treliça</button>
+        <button class="btn ghost" id="btnTrussExample">Exemplo: treliça triangular</button>
+      </div>
+      <div id="trussMsg"></div>
+    </div>
+
+    <div class="card">
+      <h2>Geometria e esforços axiais</h2>
+      <p class="sub">Azul = tração · Laranja = compressão · Cinza = força nula</p>
+      <canvas id="cvTruss" style="height:430px"></canvas>
+      <div id="trussOut"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h2>Memória de cálculo — equilíbrio nodal</h2>
+    <div id="trussMemory"><p class="sub">Execute o cálculo para gerar as equações de equilíbrio em cada nó.</p></div>
+  </div>
+</section>
+
+<!-- ===================== 3D ===================== -->
+<section class="view" id="view-space">
+  <div class="grid cols-2">
+    <div class="card">
+      <h2>Sistema espacial de forças</h2>
+      <p class="sub">X, Y, Z em metros; forças em kN. Arraste o desenho para girar; use a roda do mouse para zoom.</p>
+      <div id="f3List"></div>
+      <div class="row" style="margin-top:6px">
+        <button class="btn ghost sm" id="btnAddF3">+ Força 3D</button>
+        <button class="btn" id="btnSolveF3">Calcular</button>
+      </div>
+      <div id="f3Out" style="margin-top:10px"></div>
+    </div>
+    <div class="card">
+      <h2>Visualização 3D</h2>
+      <canvas id="cv3d" style="height:460px;cursor:grab"></canvas>
+      <p class="sub" style="margin-top:8px">Vermelho = eixo X · Verde = eixo Y · Azul = eixo Z</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== DESAFIOS ===================== -->
+<section class="view" id="view-game">
+  <div class="card">
+    <h2>Modo desafio</h2>
+    <p class="sub">Exercícios gerados com semente reproduzível. A tolerância relativa é configurável.</p>
+    <div class="row">
+      <div><label class="f">Nível</label>
+        <select id="gLevel">
+          <option value="1">1 — Decomposição de forças</option>
+          <option value="2">2 — Resultante e momento</option>
+          <option value="3">3 — Equilíbrio de corpo rígido</option>
+          <option value="4">4 — Reações de apoio em vigas</option>
+          <option value="5">5 — Cortante e momento máximo</option>
+        </select>
+      </div>
+      <div><label class="f">Semente</label><input type="number" id="gSeed" value="12345"></div>
+      <div><label class="f">Tolerância relativa</label><input type="number" id="gTol" value="0.02" step="0.005" min="0.001"></div>
+      <div class="fixed"><button class="btn" id="gNew">Novo exercício</button></div>
+    </div>
+    <div id="gBody" style="margin-top:14px"></div>
+  </div>
+  <div class="card" style="margin-top:14px">
+    <h2>Histórico</h2>
+    <div id="gHist"><p class="sub">Nenhuma tentativa registrada.</p></div>
+    <button class="btn ghost sm" id="gClearHist" style="margin-top:8px">Limpar histórico</button>
+  </div>
+</section>
+
+<!-- ===================== TESTES ===================== -->
+<section class="view" id="view-tests">
+  <div class="card">
+    <h2>Testes automáticos com solução analítica</h2>
+    <p class="sub">Comparação numérica com tolerância relativa de 1×10⁻⁶ (salvo indicação em contrário).</p>
+    <button class="btn" id="btnRunTests">Executar todos os testes</button>
+    <div id="testOut" style="margin-top:12px"></div>
+  </div>
+</section>
+
+<!-- ===================== RELATÓRIO ===================== -->
+<section class="view" id="view-report">
+  <div class="card">
+    <h2>Relatório e exportação</h2>
+    <div class="row">
+      <div><label class="f">Nome do projeto</label><input id="rpName" value="Estudo de estática"></div>
+      <div><label class="f">Responsável</label><input id="rpOwner" value=""></div>
+      <div><label class="f">Data</label><input type="date" id="rpDate"></div>
+    </div>
+    <div style="margin-top:8px"><label class="f">Observações</label><textarea id="rpNotes" rows="3" placeholder="Hipóteses, dúvidas, comentários..."></textarea></div>
+    <div class="row" style="margin-top:12px">
+      <button class="btn" id="btnPrint">Imprimir / Salvar em PDF (A4)</button>
+      <button class="btn ghost" id="btnSaveJson">Salvar projeto (.json)</button>
+      <button class="btn ghost" id="btnLoadJson">Abrir projeto (.json)</button>
+      <button class="btn ghost" id="btnCsv">Exportar resultados (.csv)</button>
+    </div>
+    <input type="file" id="fileJson" accept="application/json" class="hidden">
+    <div id="rpMsg"></div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h2>Resumo do projeto</h2>
+    <div id="rpSummary"></div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  APavan Estática 3D · motor de cálculo v1.0.0 · Ferramenta de ensino e simulação.<br>
+  Não substitui projeto estrutural, verificação normativa ou responsabilidade técnica.
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+/* ============================================================================
+   APavan Estática 3D — motor de cálculo e interface
+   Versão do motor: 1.0.0
+   ============================================================================ */
+const CALC_VERSION = "1.0.0";
+
+/* ---------------------------- utilidades --------------------------------- */
+const $  = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => Array.from(r.querySelectorAll(s));
+const num = (el, def=0) => {
+  if (el === null || el === undefined) return def;
+  const raw = (typeof el === 'object' && 'value' in el) ? el.value : el;
+  const v = parseFloat(String(raw).replace(',', '.'));
+  return isFinite(v) ? v : def;
+};
+const clamp = (v,a,b) => Math.min(b, Math.max(a,v));
+const fmt = (v, d=3) => {
+  if (v === null || v === undefined || !isFinite(v)) return "—";
+  if (Math.abs(v) < 1e-10) v = 0;
+  return v.toLocaleString('pt-BR', {minimumFractionDigits:0, maximumFractionDigits:d});
+};
+const fmtU = (v,u,d=3) => fmt(v,d) + (u ? " " + u : "");
+
+function toast(msg){
+  const t = $("#toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(toast._t);
+  toast._t = setTimeout(()=>t.classList.remove("show"), 2600);
+}
+
+/* Paleta usada nos canvas (muda com o tema) */
+let PAL = {};
+function refreshPalette(){
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  PAL = dark ? {
+    bg:"#182e4d", grid:"#23405f", axis:"#5f7fa6", txt:"#e6eefb", txt2:"#9db2cc",
+    beam:"#8fb3d9", load:"#f87171", react:"#34d399", moment:"#fbbf24",
+    V:"#38bdf8", M:"#22d3ee", N:"#a78bfa", tension:"#38bdf8", compression:"#fb923c",
+    zero:"#7b8ea8", accent:"#22d3ee"
+  } : {
+    bg:"#f3f7fd", grid:"#d6e2f0", axis:"#8aa4c0", txt:"#0b1626", txt2:"#4a6180",
+    beam:"#3b5f8a", load:"#dc2626", react:"#059669", moment:"#b45309",
+    V:"#0284c7", M:"#0891b2", N:"#7c3aed", tension:"#0284c7", compression:"#ea580c",
+    zero:"#94a3b8", accent:"#0891b2"
+  };
+}
+
+/* ----------------------- álgebra linear (Gauss) --------------------------- */
+/**
+ * Resolve A·x = b por eliminação de Gauss com pivotamento parcial.
+ * @returns {{ok:boolean, x?:number[], residual?:number, msg?:string}}
+ */
+function solveLinear(A, b){
+  const n = A.length;
+  if (n === 0) return {ok:false, msg:"Sistema vazio."};
+  if (b.length !== n) return {ok:false, msg:"Dimensões incompatíveis."};
+  // Verifica quadratura
+  for (let i=0;i<n;i++) if (!A[i] || A[i].length !== n) return {ok:false, msg:"Matriz não quadrada."};
+
+  let maxAbs = 0;
+  for (let i=0;i<n;i++) for (let j=0;j<n;j++) maxAbs = Math.max(maxAbs, Math.abs(A[i][j]));
+  if (maxAbs === 0) return {ok:false, msg:"Matriz nula (sistema singular)."};
+
+  const M = A.map((row,i)=> row.slice().concat([b[i]]));
+  const tol = 1e-11 * maxAbs;
+
+  for (let c=0;c<n;c++){
+    let p = c;
+    for (let r=c+1;r<n;r++) if (Math.abs(M[r][c]) > Math.abs(M[p][c])) p = r;
+    if (Math.abs(M[p][c]) < tol) {
+      return {ok:false, msg:"Matriz singular ou mal condicionada — o modelo é um mecanismo ou está sub-restringido."};
+    }
+    if (p !== c){ const tmp = M[c]; M[c] = M[p]; M[p] = tmp; }
+    for (let r=0;r<n;r++){
+      if (r === c) continue;
+      const f = M[r][c] / M[c][c];
+      if (f === 0) continue;
+      for (let k=c;k<=n;k++) M[r][k] -= f * M[c][k];
+    }
+  }
+  const x = new Array(n);
+  for (let i=0;i<n;i++) x[i] = M[i][n] / M[i][i];
+  let res = 0;
+  for (let i=0;i<n;i++){
+    let s = 0;
+    for (let j=0;j<n;j++) s += A[i][j]*x[j];
+    res = Math.max(res, Math.abs(s - b[i]));
+  }
+  if (!x.every(v=>isFinite(v))) return {ok:false, msg:"Solução não finita — modelo inválido."};
+  return {ok:true, x, residual:res};
+}
+
+/* --------------------------- vetores 3D ---------------------------------- */
+const V3 = {
+  add:(a,b)=>[a[0]+b[0], a[1]+b[1], a[2]+b[2]],
+  sub:(a,b)=>[a[0]-b[0], a[1]-b[1], a[2]-b[2]],
+  mul:(a,s)=>[a[0]*s, a[1]*s, a[2]*s],
+  dot:(a,b)=>a[0]*b[0]+a[1]*b[1]+a[2]*b[2],
+  cross:(a,b)=>[a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]],
+  norm:a=>Math.hypot(a[0],a[1],a[2]),
+  zero:()=>[0,0,0]
+};
+
+/* ============================================================================
+   MOTOR — FORÇAS E MOMENTOS
+   ============================================================================ */
+const ForceSolver = {
+  /**
+   * @param {Array} forces [{nome, F, ang (deg), Fz, x, y, z}]
+   * @param {number[]} origin [x,y,z]
+   */
+  solve(forces, origin=[0,0,0]){
+    const rows = [];
+    let Rx=0, Ry=0, Rz=0;
+    let Mo = [0,0,0];
+    for (const f of forces){
+      const th = (f.ang||0) * Math.PI/180;
+      const Fx = (f.F||0) * Math.cos(th);
+      const Fy = (f.F||0) * Math.sin(th);
+      const Fz = f.Fz || 0;
+      const r  = [f.x - origin[0], f.y - origin[1], (f.z||0) - origin[2]];
+      const F  = [Fx, Fy, Fz];
+      const M  = V3.cross(r, F);
+      Mo = V3.add(Mo, M);
+      Rx += Fx; Ry += Fy; Rz += Fz;
+      const Fm = Math.hypot(Fx,Fy,Fz);
+      rows.push({
+        nome: f.nome || "F", Fx, Fy, Fz, Fm,
+        angXY: Math.atan2(Fy,Fx)*180/Math.PI,
+        r, M,
+        braco: Fm > 1e-12 ? Math.hypot(M[0],M[1],M[2])/Fm : 0,
+        x: f.x, y: f.y, z: f.z||0
+      });
+    }
+    const R = [Rx,Ry,Rz];
+    const Rm = V3.norm(R);
+    return {
+      rows, R, Rm,
+      angXY: Math.atan2(Ry,Rx)*180/Math.PI,
+      Mo, Mom: V3.norm(Mo),
+      // Sistema força-binário equivalente na origem: R aplicada na origem + binário Mo
+      equivalente: {R, M: Mo}
+    };
+  }
+};
+
+/* ============================================================================
+   MOTOR — VIGAS
+   ============================================================================ */
+const BeamSolver = {
+
+  /** Resultante de uma carga distribuída linear w1→w2 (kN/m, positivo para baixo) */
+  distTotal(load){
+    const {x1,x2,w1,w2} = load;
+    const len = x2 - x1;
+    if (len <= 0) return {W:0, xbar:x1};
+    const k = (w2 - w1)/len;
+    const W = w1*len + k*len*len/2;
+    const xbar = Math.abs(W) > 1e-12
+      ? x1 + (w1*len*len/2 + k*len*len*len/3)/W
+      : x1 + len/2;
+    return {W, xbar};
+  },
+
+  /** Parcela da carga distribuída entre x1 e x (para esforços internos) */
+  distPartial(load, x){
+    const {x1,x2,w1,w2} = load;
+    if (x <= x1) return null;
+    const xc = Math.min(x, x2);
+    const t = xc - x1;
+    if (t <= 0) return null;
+    const len = x2 - x1;
+    const k = (w2 - w1)/len;
+    const W = w1*t + k*t*t/2;
+    if (Math.abs(W) < 1e-12) return {W:0, xbar:x1 + t/2};
+    const xbar = x1 + (w1*t*t/2 + k*t*t*t/3)/W;
+    return {W, xbar};
+  },
+
+  /** Contribuição total de uma carga para o equilíbrio global */
+  loadResultant(load){
+    if (load.t === "point") {
+      const Fx = load.Fx||0, Fy = load.Fy||0;
+      return {Fx, Fy, M0: load.x*Fy - 0*Fx};
+    }
+    if (load.t === "moment") return {Fx:0, Fy:0, M0: load.M};
+    const {W, xbar} = this.distTotal(load);
+    return {Fx:0, Fy:-W, M0: xbar*(-W)};
+  },
+
+  solve(model){
+    const L = model.L;
+    if (!(L > 0)) return {ok:false, msg:"Comprimento da viga deve ser maior que zero."};
+    if (!model.supports.length) return {ok:false, msg:"Nenhum apoio definido — estrutura não vinculada."};
+
+    // --- incógnitas de reação ---
+    const unknowns = [];
+    model.supports.forEach((s,si)=>{
+      if (s.type === "pin" || s.type === "fixed") unknowns.push({kind:"Rx", x:s.x, sup:si});
+      if (s.type === "pin" || s.type === "roller" || s.type === "fixed") unknowns.push({kind:"Ry", x:s.x, sup:si});
+      if (s.type === "fixed") unknowns.push({kind:"M", x:s.x, sup:si});
+    });
+    const nu = unknowns.length;
+    if (nu > 3) {
+      return {ok:false, msg:`Estrutura hiperestática para este módulo (${nu} incógnitas de reação > 3 equações). `+
+        `O módulo de vigas resolve apenas estruturas isostáticas. Reduza os vínculos ou utilize um módulo de análise por rigidez.`};
+    }
+    if (nu < 3) {
+      return {ok:false, msg:`Estrutura hipostática / mecanismo (${nu} incógnita(s) de reação < 3 equações de equilíbrio). `+
+        `Adicione vínculos até obter 3 incógnitas independentes.`};
+    }
+
+    // --- carregamento global ---
+    let sumFx = 0, sumFy = 0, sumM0 = 0;
+    const loadRes = [];
+    for (const ld of model.loads){
+      const r = this.loadResultant(ld);
+      loadRes.push(r);
+      sumFx += r.Fx; sumFy += r.Fy; sumM0 += r.M0;
+    }
+
+    // --- sistema 3x3 ---
+    const A = [[0,0,0],[0,0,0],[0,0,0]];
+    const b = [-sumFx, -sumFy, -sumM0];
+    unknowns.forEach((u,k)=>{
+      if (u.kind === "Rx") A[0][k] = 1;
+      else if (u.kind === "Ry"){ A[1][k] = 1; A[2][k] = u.x; }
+      else if (u.kind === "M"){ A[2][k] = 1; }
+    });
+
+    const sol = solveLinear(A, b);
+    if (!sol.ok) return {ok:false, msg:"Não foi possível resolver as equações de equilíbrio. " + sol.msg};
+
+    const reactions = unknowns.map((u,k)=>({
+      kind:u.kind, x:u.x, value:sol.x[k],
+      label: (u.kind === "Rx" ? "R" : u.kind === "Ry" ? "V" : "M") + (u.sup+1)
+    }));
+
+    // --- verificação de equilíbrio global ---
+    let vFx = 0, vFy = 0, vM = 0;
+    reactions.forEach(r=>{
+      if (r.kind === "Rx") vFx += r.value;
+      else if (r.kind === "Ry"){ vFy += r.value; vM += r.x*r.value; }
+      else vM += r.value;
+    });
+    const resFx = Math.abs(vFx + sumFx);
+    const resFy = Math.abs(vFy + sumFy);
+    const resM  = Math.abs(vM + sumM0);
+    const eqOk = resFx < 1e-6 && resFy < 1e-6 && resM < 1e-6;
+
+    // --- diagramas ---
+    const xs = this.buildSamples(model);
+    const V = xs.map(x=>this.internalAt(x, model, reactions).V);
+    const M = xs.map(x=>this.internalAt(x, model, reactions).M);
+    const N = xs.map(x=>this.internalAt(x, model, reactions).N);
+
+    const ext = (arr) => {
+      let mx = -Infinity, mn = Infinity, ix = 0, in_ = 0;
+      arr.forEach((v,i)=>{ if (v > mx){mx=v; ix=i;} if (v < mn){mn=v; in_=i;} });
+      return {max:mx, min:mn, xMax:xs[ix], xMin:xs[in_]};
+    };
+
+    return {
+      ok:true,
+      reactions, unknowns, loadRes,
+      sums:{sumFx, sumFy, sumM0},
+      residual:{resFx, resFy, resM, eqOk},
+      samples:{x:xs, V, M, N},
+      extremes:{V:ext(V), M:ext(M), N:ext(N)},
+      A, b, sol
+    };
+  },
+
+  buildSamples(model){
+    const L = model.L;
+    const crit = new Set([0, L]);
+    model.supports.forEach(s=>crit.add(clamp(s.x,0,L)));
+    model.loads.forEach(l=>{
+      if (l.t === "point" || l.t === "moment") crit.add(clamp(l.x,0,L));
+      else { crit.add(clamp(l.x1,0,L)); crit.add(clamp(l.x2,0,L)); }
+    });
+    const c = Array.from(crit).sort((a,b)=>a-b);
+    const d = Math.max(1e-6, L*1e-6);
+    const out = [];
+    for (let i=0;i<c.length;i++){
+      out.push(Math.max(0, c[i]-d));
+      out.push(Math.min(L, c[i]+d));
+      if (i < c.length-1){
+        const nSeg = 16;
+        for (let k=1;k<nSeg;k++) out.push(c[i] + (c[i+1]-c[i])*k/nSeg);
+      }
+    }
+    const uniq = Array.from(new Set(out.map(v=>Math.round(v*1e8)/1e8))).sort((a,b)=>a-b);
+    return uniq;
+  },
+
+  internalAt(x, model, reactions){
+    let sumFy = 0, sumFx = 0, sumM = 0;
+    const eps = 1e-12;
+    for (const r of reactions){
+      if (r.x > x + eps) continue;
+      if (r.kind === "Rx") sumFx += r.value;
+      else if (r.kind === "Ry"){ sumFy += r.value; sumM += (r.x - x)*r.value; }
+      else sumM += r.value;
+    }
+    for (const ld of model.loads){
+      if (ld.t === "point"){
+        if (ld.x > x + eps) continue;
+        sumFx += ld.Fx||0;
+        sumFy += ld.Fy||0;
+        sumM  += (ld.x - x)*(ld.Fy||0);
+      } else if (ld.t === "moment"){
+        if (ld.x > x + eps) continue;
+        sumM += ld.M;
+      } else {
+        const p = this.distPartial(ld, x);
+        if (p && Math.abs(p.W) > 1e-14){
+          sumFy += -p.W;
+          sumM  += (p.xbar - x)*(-p.W);
         }
+      }
+    }
+    return {N: -sumFx, V: sumFy, M: -sumM};
+  }
+};
 
-        function saveAndRender() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(meds));
-            render();
+/* ============================================================================
+   MOTOR — TRELIÇAS PLANAS (método dos nós via sistema de equilíbrio)
+   ============================================================================ */
+const TrussSolver = {
+  solve(model){
+    const {nodes, bars, supports, loads} = model;
+    const n = nodes.length, m = bars.length;
+    if (n < 2) return {ok:false, msg:"Defina ao menos dois nós."};
+    if (m < 1) return {ok:false, msg:"Defina ao menos uma barra."};
+
+    // reações
+    const reactCols = [];
+    for (const s of supports){
+      if (s.node == null || s.node < 0 || s.node >= n) continue;
+      if (s.type === "pin"){ reactCols.push({node:s.node, dir:"x"}); reactCols.push({node:s.node, dir:"y"}); }
+      else if (s.type === "roller-y") reactCols.push({node:s.node, dir:"y"});
+      else if (s.type === "roller-x") reactCols.push({node:s.node, dir:"x"});
+    }
+    const nc = m + reactCols.length;
+    const neq = 2*n;
+    if (nc !== neq){
+      return {ok:false,
+        msg:`A treliça não é isostática para o método dos nós: 2n = ${neq} equações, m + r = ${m} + ${reactCols.length} = ${nc} incógnitas. ` +
+            (nc > neq ? "Estrutura hiperestática — necessita análise por rigidez." : "Estrutura hipostática — mecanismo. Adicione barras ou vínculos.")};
+    }
+
+    // geometria das barras
+    const geo = bars.map((b,bi)=>{
+      const ni = b.i, nj = b.j;
+      if (ni == null || nj == null || ni === nj || ni >= n || nj >= n)
+        return {L:0, cx:0, cy:0, erro:"Barra com nós inválidos"};
+      const dx = nodes[nj].x - nodes[ni].x;
+      const dy = nodes[nj].y - nodes[ni].y;
+      const L = Math.hypot(dx,dy);
+      return {L, cx: L>1e-12 ? dx/L : 0, cy: L>1e-12 ? dy/L : 0, erro: L<1e-12 ? "Barra de comprimento nulo" : null};
+    });
+    const bad = geo.find(g=>g.erro);
+    if (bad) return {ok:false, msg:"Geometria inválida: " + bad.erro + "."};
+
+    // matriz de equilíbrio
+    const A = Array.from({length:neq}, ()=> new Array(nc).fill(0));
+    bars.forEach((b,bi)=>{
+      const g = geo[bi];
+      const i = b.i, j = b.j;
+      A[2*i][bi]   += g.cx;  A[2*i+1][bi]   += g.cy;
+      A[2*j][bi]   -= g.cx;  A[2*j+1][bi]   -= g.cy;
+    });
+    reactCols.forEach((rc,k)=>{
+      const col = m + k;
+      A[2*rc.node + (rc.dir === "x" ? 0 : 1)][col] = 1;
+    });
+
+    // vetor de cargas externas
+    const bv = new Array(neq).fill(0);
+    for (const l of loads){
+      if (l.node == null || l.node < 0 || l.node >= n) continue;
+      bv[2*l.node]   -= (l.Fx||0);
+      bv[2*l.node+1] -= (l.Fy||0);
+    }
+
+    const sol = solveLinear(A, bv);
+    if (!sol.ok) return {ok:false, msg:"Sistema singular — a treliça é um mecanismo ou possui vínculos insuficientes. " + sol.msg};
+
+    const barForces = sol.x.slice(0, m);
+    const reactVals = sol.x.slice(m);
+
+    const reactions = reactCols.map((rc,k)=>({
+      node: rc.node, dir: rc.dir, value: reactVals[k],
+      label: (rc.dir === "x" ? "Rx" : "Ry") + (rc.node+1)
+    }));
+
+    // verificação de equilíbrio nodal
+    const nodeResidual = nodes.map(()=>({Fx:0, Fy:0}));
+    bars.forEach((b,bi)=>{
+      const g = geo[bi];
+      const T = barForces[bi];
+      nodeResidual[b.i].Fx += T*g.cx; nodeResidual[b.i].Fy += T*g.cy;
+      nodeResidual[b.j].Fx -= T*g.cx; nodeResidual[b.j].Fy -= T*g.cy;
+    });
+    reactCols.forEach((rc,k)=>{
+      if (rc.dir === "x") nodeResidual[rc.node].Fx += reactVals[k];
+      else nodeResidual[rc.node].Fy += reactVals[k];
+    });
+    for (const l of loads){
+      if (l.node == null || l.node < 0 || l.node >= n) continue;
+      nodeResidual[l.node].Fx += (l.Fx||0);
+      nodeResidual[l.node].Fy += (l.Fy||0);
+    }
+    const maxRes = nodeResidual.reduce((mx,r)=>Math.max(mx, Math.abs(r.Fx), Math.abs(r.Fy)), 0);
+
+    return {
+      ok:true, geo, barForces, reactions, reactCols,
+      nodeResidual, maxRes, sol,
+      globalRes: sol.residual
+    };
+  }
+};
+
+/* ============================================================================
+   ESTADO DA APLICAÇÃO
+   ============================================================================ */
+const APP = {
+  theme: "dark",
+  forces: [
+    {nome:"F1", F:10, ang:0,  Fz:0, x:0, y:0, z:0},
+    {nome:"F2", F:10, ang:180,Fz:0, x:0, y:0, z:0}
+  ],
+  forceResult: null,
+  beam: null,
+  beamResult: null,
+  truss: null,
+  trussResult: null,
+  f3: [
+    {nome:"F1", Fx:10, Fy:0,  Fz:0, x:0, y:0, z:0},
+    {nome:"F2", Fx:0,  Fy:10, Fz:0, x:1, y:2, z:0}
+  ],
+  f3Result: null,
+  game: {hist:[]}
+};
+
+/* ============================================================================
+   CANVAS — utilidades
+   ============================================================================ */
+function setupCanvas(cv){
+  const dpr = window.devicePixelRatio || 1;
+  const w = cv.clientWidth || 600;
+  const h = cv.clientHeight || 300;
+  if (cv.width !== Math.round(w*dpr) || cv.height !== Math.round(h*dpr)){
+    cv.width = Math.round(w*dpr);
+    cv.height = Math.round(h*dpr);
+  }
+  const ctx = cv.getContext("2d");
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,w,h);
+  return {ctx, w, h};
+}
+function arrow(ctx, x1,y1,x2,y2, color, lw=2){
+  const ang = Math.atan2(y2-y1, x2-x1);
+  const head = Math.max(6, Math.min(12, Math.hypot(x2-x1,y2-y1)*0.28));
+  ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = lw; ctx.lineCap="round";
+  ctx.beginPath(); ctx.moveTo(x1,y1); ctx.lineTo(x2 - Math.cos(ang)*head*0.6, y2 - Math.sin(ang)*head*0.6); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x2,y2);
+  ctx.lineTo(x2 - Math.cos(ang-0.4)*head, y2 - Math.sin(ang-0.4)*head);
+  ctx.lineTo(x2 - Math.cos(ang+0.4)*head, y2 - Math.sin(ang+0.4)*head);
+  ctx.closePath(); ctx.fill();
+}
+function label(ctx, text, x, y, color, size=12, align="center"){
+  ctx.font = `600 ${size}px "Segoe UI",system-ui,sans-serif`;
+  ctx.textAlign = align; ctx.textBaseline = "middle";
+  ctx.fillStyle = color;
+  ctx.fillText(text, x, y);
+}
+
+/* ============================================================================
+   RENDER — FORÇAS
+   ============================================================================ */
+function renderForceList(){
+  const box = $("#forceList");
+  box.innerHTML = "";
+  APP.forces.forEach((f, i)=>{
+    const d = document.createElement("div");
+    d.className = "load-card";
+    d.innerHTML = `
+      <div class="lc-head">
+        <input class="fn" value="${f.nome}" style="max-width:90px" title="Identificação">
+        <span class="tag ok">Força ${i+1}</span>
+        <button class="btn danger sm" data-del="${i}">✕</button>
+      </div>
+      <div class="lc-body">
+        <div><label class="f">F (kN)</label><input type="number" class="fF" value="${f.F}" step="0.1"></div>
+        <div><label class="f">Ângulo (°)</label><input type="number" class="fA" value="${f.ang}" step="1"></div>
+        <div><label class="f">Fz (kN)</label><input type="number" class="fZ" value="${f.Fz||0}" step="0.1"></div>
+        <div><label class="f">x (m)</label><input type="number" class="fX" value="${f.x}" step="0.1"></div>
+        <div><label class="f">y (m)</label><input type="number" class="fY" value="${f.y}" step="0.1"></div>
+        <div><label class="f">z (m)</label><input type="number" class="fZ2" value="${f.z||0}" step="0.1"></div>
+      </div>`;
+    d.querySelector("[data-del]").addEventListener("click", ()=>{
+      APP.forces.splice(i,1); renderForceList(); drawForces();
+    });
+    box.appendChild(d);
+  });
+}
+function readForces(){
+  APP.forces = $$("#forceList .load-card").map((c,i)=>({
+    nome: c.querySelector(".fn").value || ("F"+(i+1)),
+    F:   num(c.querySelector(".fF")),
+    ang: num(c.querySelector(".fA")),
+    Fz:  num(c.querySelector(".fZ")),
+    x:   num(c.querySelector(".fX")),
+    y:   num(c.querySelector(".fY")),
+    z:   num(c.querySelector(".fZ2"))
+  }));
+}
+
+function drawForces(){
+  const cv = $("#cvForces");
+  const {ctx, w, h} = setupCanvas(cv);
+  ctx.fillStyle = PAL.bg; ctx.fillRect(0,0,w,h);
+
+  const res = APP.forceResult;
+  const pts = APP.forces.map(f=>({x:f.x, y:f.y}));
+  let minX = Math.min(0,...pts.map(p=>p.x)), maxX = Math.max(0,...pts.map(p=>p.x));
+  let minY = Math.min(0,...pts.map(p=>p.y)), maxY = Math.max(0,...pts.map(p=>p.y));
+  const spanX = Math.max(1, maxX-minX), spanY = Math.max(1, maxY-minY);
+  const span = Math.max(spanX, spanY);
+  const cx0 = (minX+maxX)/2, cy0 = (minY+maxY)/2;
+  const pad = 50;
+  const scale = Math.min((w-2*pad)/span, (h-2*pad)/span);
+  const X = x => w/2 + (x - cx0)*scale;
+  const Y = y => h/2 - (y - cy0)*scale;
+
+  // grade
+  ctx.strokeStyle = PAL.grid; ctx.lineWidth = 1;
+  for (let g=-10; g<=10; g++){
+    const gx = cx0 + g*span/8, gy = cy0 + g*span/8;
+    ctx.beginPath(); ctx.moveTo(X(gx), 0); ctx.lineTo(X(gx), h); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, Y(gy)); ctx.lineTo(w, Y(gy)); ctx.stroke();
+  }
+  // eixos
+  ctx.strokeStyle = PAL.axis; ctx.lineWidth = 1.6;
+  ctx.beginPath(); ctx.moveTo(0, Y(0)); ctx.lineTo(w, Y(0)); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(X(0), 0); ctx.lineTo(X(0), h); ctx.stroke();
+  label(ctx, "x", w-14, Y(0)-14, PAL.txt2, 12);
+  label(ctx, "y", X(0)+14, 14, PAL.txt2, 12);
+
+  // escala das forças
+  let maxF = 1;
+  APP.forces.forEach(f=> maxF = Math.max(maxF, Math.hypot(f.F, f.Fz||0)));
+  if (res) maxF = Math.max(maxF, res.Rm);
+  const fScale = (Math.min(w,h)*0.30) / maxF;
+
+  // forças
+  APP.forces.forEach((f,i)=>{
+    const th = (f.ang||0)*Math.PI/180;
+    const Fx = f.F*Math.cos(th), Fy = f.F*Math.sin(th);
+    const x0 = X(f.x), y0 = Y(f.y);
+    const x1 = x0 + Fx*fScale, y1 = y0 - Fy*fScale;
+    if (Math.hypot(x1-x0, y1-y0) > 1){
+      arrow(ctx, x0, y0, x1, y1, PAL.load, 2.4);
+      label(ctx, f.nome || ("F"+(i+1)), x1 + 12*Math.sign(x1-x0||1), y1 - 12, PAL.load, 12);
+    }
+    ctx.fillStyle = PAL.accent;
+    ctx.beginPath(); ctx.arc(x0,y0,3.5,0,7); ctx.fill();
+  });
+
+  // resultante
+  if (res && res.Rm > 1e-9){
+    const x0 = X(0), y0 = Y(0);
+    const x1 = x0 + res.R[0]*fScale, y1 = y0 - res.R[1]*fScale;
+    arrow(ctx, x0, y0, x1, y1, PAL.react, 3.2);
+    label(ctx, "R = " + fmt(res.Rm,2) + " kN", x1+14, y1-14, PAL.react, 13);
+  } else if (res){
+    label(ctx, "R = 0 (sistema em equilíbrio de forças)", w/2, 20, PAL.react, 13);
+  }
+}
+
+/* ============================================================================
+   VIGAS — UI e render
+   ============================================================================ */
+function newSupport(x, type){ return {x, type}; }
+
+function renderSupports(){
+  const box = $("#beamSupports");
+  box.innerHTML = "";
+  const list = APP.beam.supports;
+  list.forEach((s, i)=>{
+    const d = document.createElement("div");
+    d.className = "load-card";
+    d.innerHTML = `
+      <div class="lc-head">
+        <span class="tag ok">Apoio ${i+1}</span>
+        <button class="btn danger sm" data-del="${i}">✕</button>
+      </div>
+      <div class="lc-body">
+        <div><label class="f">x (m)</label><input type="number" class="sx" value="${s.x}" step="0.1"></div>
+        <div><label class="f">Tipo</label>
+          <select class="st">
+            <option value="pin"${s.type==='pin'?' selected':''}>Articulado (2 reações)</option>
+            <option value="roller"${s.type==='roller'?' selected':''}>Móvel (1 reação vertical)</option>
+            <option value="fixed"${s.type==='fixed'?' selected':''}>Engaste (força + momento)</option>
+          </select>
+        </div>
+      </div>`;
+    d.querySelector("[data-del]").addEventListener("click", ()=>{
+      APP.beam.supports.splice(i,1); renderSupports();
+    });
+    d.querySelector(".st").addEventListener("change", e=>{ APP.beam.supports[i].type = e.target.value; });
+    d.querySelector(".sx").addEventListener("input", e=>{ APP.beam.supports[i].x = num(e.target); });
+    box.appendChild(d);
+  });
+}
+
+function renderLoads(){
+  const box = $("#beamLoads");
+  box.innerHTML = "";
+  APP.beam.loads.forEach((ld, i)=>{
+    const d = document.createElement("div");
+    d.className = "load-card";
+    const t = ld.t;
+    d.innerHTML = `
+      <div class="lc-head">
+        <select class="lt">
+          <option value="point"${t==='point'?' selected':''}>Carga concentrada</option>
+          <option value="udl"${t==='udl'?' selected':''}>Carga distribuída (w1→w2)</option>
+          <option value="moment"${t==='moment'?' selected':''}>Momento concentrado</option>
+        </select>
+        <button class="btn danger sm" data-del="${i}">✕</button>
+      </div>
+      <div class="lc-body">
+        <div class="fld-point"><label class="f">x (m)</label><input type="number" class="lx" value="${ld.x ?? 0}" step="0.1"></div>
+        <div class="fld-point"><label class="f">Fx (kN)</label><input type="number" class="lFx" value="${ld.Fx ?? 0}" step="0.1"></div>
+        <div class="fld-point"><label class="f">Fy (kN)</label><input type="number" class="lFy" value="${ld.Fy ?? -10}" step="0.1"></div>
+        <div class="fld-udl"><label class="f">x₁ (m)</label><input type="number" class="lx1" value="${ld.x1 ?? 0}" step="0.1"></div>
+        <div class="fld-udl"><label class="f">x₂ (m)</label><input type="number" class="lx2" value="${ld.x2 ?? 4}" step="0.1"></div>
+        <div class="fld-udl"><label class="f">w₁ (kN/m)</label><input type="number" class="lw1" value="${ld.w1 ?? 4}" step="0.1"></div>
+        <div class="fld-udl"><label class="f">w₂ (kN/m)</label><input type="number" class="lw2" value="${ld.w2 ?? 4}" step="0.1"></div>
+        <div class="fld-moment"><label class="f">x (m)</label><input type="number" class="lmx" value="${ld.x ?? 0}" step="0.1"></div>
+        <div class="fld-moment"><label class="f">M (kN·m)</label><input type="number" class="lM" value="${ld.M ?? 10}" step="0.1"></div>
+      </div>`;
+    const syncVis = ()=>{
+      const ty = d.querySelector(".lt").value;
+      $$(".fld-point", d).forEach(e=>e.classList.toggle("hidden", ty!=='point'));
+      $$(".fld-udl", d).forEach(e=>e.classList.toggle("hidden", ty!=='udl'));
+      $$(".fld-moment", d).forEach(e=>e.classList.toggle("hidden", ty!=='moment'));
+    };
+    d.querySelector(".lt").value = t;
+    syncVis();
+    d.querySelector(".lt").addEventListener("change", e=>{
+      const nt = e.target.value;
+      const old = APP.beam.loads[i];
+      if (nt === "point") APP.beam.loads[i] = {t:"point", x: old.x ?? 0, Fx: old.Fx ?? 0, Fy: old.Fy ?? -10};
+      else if (nt === "udl") APP.beam.loads[i] = {t:"udl", x1: old.x1 ?? 0, x2: old.x2 ?? APP.beam.L, w1: old.w1 ?? 4, w2: old.w2 ?? 4};
+      else APP.beam.loads[i] = {t:"moment", x: old.x ?? 0, M: old.M ?? 10};
+      renderLoads();
+    });
+    d.querySelector("[data-del]").addEventListener("click", ()=>{
+      APP.beam.loads.splice(i,1); renderLoads();
+    });
+    box.appendChild(d);
+  });
+}
+
+function readBeam(){
+  APP.beam.L = Math.max(0.1, num($("#beamL"), 6));
+  APP.beam.supports = $$("#beamSupports .load-card").map(c=>({
+    x: num(c.querySelector(".sx")), type: c.querySelector(".st").value
+  }));
+  APP.beam.loads = $$("#beamLoads .load-card").map(c=>{
+    const t = c.querySelector(".lt").value;
+    if (t === "point") return {t:"point", x:num(c.querySelector(".lx")), Fx:num(c.querySelector(".lFx")), Fy:num(c.querySelector(".lFy"))};
+    if (t === "udl")   return {t:"udl", x1:num(c.querySelector(".lx1")), x2:num(c.querySelector(".lx2")), w1:num(c.querySelector(".lw1")), w2:num(c.querySelector(".lw2"))};
+    return {t:"moment", x:num(c.querySelector(".lmx")), M:num(c.querySelector(".lM"))};
+  });
+  // peso próprio
+  if ($("#beamSelf").checked){
+    const q = num($("#beamSelfQ"), 0);
+    if (q > 0) APP.beam.loads.unshift({t:"udl", x1:0, x2:APP.beam.L, w1:q, w2:q, _self:true});
+  }
+}
+
+/* ---------- desenho da viga ---------- */
+function drawBeam(){
+  const cv = $("#cvBeam");
+  const {ctx, w, h} = setupCanvas(cv);
+  ctx.fillStyle = PAL.bg; ctx.fillRect(0,0,w,h);
+
+  const model = APP.beam;
+  const res = APP.beamResult;
+  const L = model.L;
+  const pad = 46;
+  const scale = (w - 2*pad) / L;
+  const X = x => pad + x*scale;
+  const Y0 = h*0.56;
+
+  // grade
+  ctx.strokeStyle = PAL.grid; ctx.lineWidth = 1;
+  for (let g=0; g<=Math.ceil(L); g++){
+    ctx.beginPath(); ctx.moveTo(X(g), 18); ctx.lineTo(X(g), h-34); ctx.stroke();
+  }
+
+  // viga
+  ctx.strokeStyle = PAL.beam; ctx.lineWidth = 7; ctx.lineCap = "round";
+  ctx.beginPath(); ctx.moveTo(X(0), Y0); ctx.lineTo(X(L), Y0); ctx.stroke();
+  ctx.strokeStyle = PAL.accent; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.moveTo(X(0), Y0); ctx.lineTo(X(L), Y0); ctx.stroke();
+
+  // cotas
+  ctx.strokeStyle = PAL.txt2; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(X(0), h-22); ctx.lineTo(X(L), h-22); ctx.stroke();
+  label(ctx, "L = " + fmt(L,2) + " m", X(L/2), h-11, PAL.txt2, 12);
+
+  // apoios
+  model.supports.forEach((s)=>{
+    const x = X(s.x), y = Y0;
+    ctx.strokeStyle = PAL.react; ctx.fillStyle = PAL.react; ctx.lineWidth = 2;
+    if (s.type === "pin"){
+      ctx.beginPath(); ctx.moveTo(x,y+4); ctx.lineTo(x-11,y+24); ctx.lineTo(x+11,y+24); ctx.closePath(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x-14,y+24); ctx.lineTo(x+14,y+24); ctx.stroke();
+      for (let k=-12;k<=12;k+=6){ ctx.beginPath(); ctx.moveTo(x+k, y+24); ctx.lineTo(x+k-5, y+32); ctx.stroke(); }
+    } else if (s.type === "roller"){
+      ctx.beginPath(); ctx.moveTo(x,y+4); ctx.lineTo(x-11,y+22); ctx.lineTo(x+11,y+22); ctx.closePath(); ctx.stroke();
+      ctx.beginPath(); ctx.arc(x-6, y+27, 4, 0, 7); ctx.stroke();
+      ctx.beginPath(); ctx.arc(x+6, y+27, 4, 0, 7); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x-16,y+32); ctx.lineTo(x+16,y+32); ctx.stroke();
+    } else { // fixed
+      ctx.beginPath(); ctx.moveTo(x, y-20); ctx.lineTo(x, y+20); ctx.stroke();
+      for (let k=-18;k<=18;k+=7){ ctx.beginPath(); ctx.moveTo(x, y+k); ctx.lineTo(x - 12, y+k+7); ctx.stroke(); }
+    }
+    label(ctx, s.type === "pin" ? "articulado" : s.type === "roller" ? "móvel" : "engaste", x, y+44, PAL.react, 10);
+  });
+
+  // cargas
+  const maxLoadVis = Math.max(1, ...model.loads.map(l=>{
+    if (l.t === "point") return Math.abs(l.Fy||0) + Math.abs(l.Fx||0);
+    if (l.t === "udl") return Math.max(Math.abs(l.w1), Math.abs(l.w2)) * 2;
+    return 10;
+  }));
+  const hMax = 58;
+  const hOf = v => 16 + (Math.abs(v)/maxLoadVis)*hMax;
+
+  model.loads.forEach(l=>{
+    if (l.t === "point"){
+      const x = X(l.x);
+      const Fy = l.Fy||0, Fx = l.Fx||0;
+      const mag = Math.hypot(Fx,Fy);
+      if (mag < 1e-9) return;
+      const hh = hOf(mag);
+      if (Fy < 0){ arrow(ctx, x, Y0-hh, x, Y0-3, PAL.load, 2.2); }
+      else if (Fy > 0){ arrow(ctx, x, Y0+hh, x, Y0+3, PAL.load, 2.2); }
+      else if (Fx > 0){ arrow(ctx, x-hh, Y0-24, x, Y0-24, PAL.load, 2.2); }
+      else { arrow(ctx, x+hh, Y0-24, x, Y0-24, PAL.load, 2.2); }
+      label(ctx, fmt(mag,2)+" kN", x, Y0 - hh - 12, PAL.load, 11);
+    }
+    else if (l.t === "udl"){
+      const x1 = X(clamp(l.x1,0,L)), x2 = X(clamp(l.x2,0,L));
+      const wm = Math.max(Math.abs(l.w1), Math.abs(l.w2));
+      const hh = hOf(wm*2);
+      const top = Y0 - hh;
+      ctx.strokeStyle = PAL.load; ctx.fillStyle = "rgba(248,113,113,.14)"; ctx.lineWidth = 1.6;
+      ctx.beginPath(); ctx.rect(Math.min(x1,x2), top, Math.abs(x2-x1), hh-3); ctx.fill(); ctx.stroke();
+      const nA = Math.max(3, Math.round(Math.abs(x2-x1)/26));
+      for (let k=0;k<=nA;k++){
+        const xx = Math.min(x1,x2) + (Math.abs(x2-x1))*k/nA;
+        arrow(ctx, xx, top, xx, Y0-3, PAL.load, 1.4);
+      }
+      label(ctx, (Math.abs(l.w1-l.w2)<1e-9 ? fmt(l.w1,2)+" kN/m" : fmt(l.w1,2)+"→"+fmt(l.w2,2)+" kN/m"),
+            (x1+x2)/2, top - 12, PAL.load, 11);
+    }
+    else {
+      const x = X(l.x);
+      ctx.strokeStyle = PAL.moment; ctx.fillStyle = PAL.moment; ctx.lineWidth = 2.2;
+      const r = 15;
+      ctx.beginPath();
+      ctx.arc(x, Y0-38, r, 0.4, Math.PI*1.6, l.M < 0);
+      ctx.stroke();
+      const a = l.M < 0 ? 0.4 : Math.PI*1.6;
+      const ax = x + r*Math.cos(a), ay = Y0-38 + r*Math.sin(a);
+      arrow(ctx, ax - 4*Math.cos(a+1.4), ay - 4*Math.sin(a+1.4), ax, ay, PAL.moment, 2);
+      label(ctx, fmt(l.M,2)+" kN·m", x, Y0-64, PAL.moment, 11);
+    }
+  });
+
+  // reações
+  if (res && res.ok){
+    res.reactions.forEach(r=>{
+      const x = X(r.x);
+      if (r.kind === "Ry"){
+        const v = r.value;
+        const mag = Math.min(70, 20 + Math.abs(v)/Math.max(1e-9, maxLoadVis)*40);
+        if (v >= 0) arrow(ctx, x, Y0+mag, x, Y0+6, PAL.react, 2.6);
+        else arrow(ctx, x, Y0-mag, x, Y0-6, PAL.react, 2.6);
+        label(ctx, fmt(v,2)+" kN", x + 6, Y0 + (v>=0 ? mag+12 : -mag-12), PAL.react, 11);
+      } else if (r.kind === "Rx"){
+        const v = r.value;
+        if (Math.abs(v) > 1e-9){
+          arrow(ctx, x, Y0-24, x + (v>0?46:-46), Y0-24, PAL.react, 2.2);
+          label(ctx, fmt(v,2)+" kN", x + (v>0?52:-52), Y0-38, PAL.react, 11);
         }
+      } else {
+        ctx.strokeStyle = PAL.react; ctx.fillStyle = PAL.react;
+        ctx.beginPath(); ctx.arc(x, Y0+40, 14, 0.4, Math.PI*1.6, r.value < 0); ctx.stroke();
+        label(ctx, fmt(r.value,2)+" kN·m", x, Y0+66, PAL.react, 11);
+      }
+    });
+  }
+}
 
-        function getPeriodInfo(time) {
-            const hour = parseInt(time.split(':')[0]);
-            if (hour >= 5 && hour < 12) return { label: 'Manhã', icon: '☀️', class: 'tag-manha' };
-            if (hour >= 12 && hour < 18) return { label: 'Tarde', icon: '🌤️', class: 'tag-tarde' };
-            if (hour >= 18 && hour < 24) return { label: 'Noite', icon: '🌙', class: 'tag-noite' };
-            return { label: 'Madrugada', icon: '🌑', class: 'tag-madrugada' };
+/* ---------- gráficos V, M, N ---------- */
+function drawDiagram(cvSel, xs, ys, color, title, unit){
+  const cv = $(cvSel);
+  const {ctx, w, h} = setupCanvas(cv);
+  ctx.fillStyle = PAL.bg; ctx.fillRect(0,0,w,h);
+
+  if (!xs || !xs.length){
+    label(ctx, "Sem resultados", w/2, h/2, PAL.txt2, 13);
+    return;
+  }
+  const padL = 54, padR = 18, padT = 26, padB = 26;
+  const xmin = xs[0], xmax = xs[xs.length-1];
+  let ymin = Math.min(0, ...ys), ymax = Math.max(0, ...ys);
+  if (Math.abs(ymax - ymin) < 1e-9){ ymax = 1; ymin = -1; }
+  const rng = ymax - ymin;
+  ymin -= rng*0.12; ymax += rng*0.12;
+
+  const X = x => padL + (x - xmin)/(xmax-xmin)*(w-padL-padR);
+  const Y = y => padT + (ymax - y)/(ymax-ymin)*(h-padT-padB);
+
+  // grade
+  ctx.strokeStyle = PAL.grid; ctx.lineWidth = 1;
+  for (let k=0;k<=4;k++){
+    const yv = ymin + (ymax-ymin)*k/4;
+    ctx.beginPath(); ctx.moveTo(padL, Y(yv)); ctx.lineTo(w-padR, Y(yv)); ctx.stroke();
+    label(ctx, fmt(yv,1), padL-6, Y(yv), PAL.txt2, 10, "right");
+  }
+  // eixo zero
+  ctx.strokeStyle = PAL.axis; ctx.lineWidth = 1.4;
+  ctx.beginPath(); ctx.moveTo(padL, Y(0)); ctx.lineTo(w-padR, Y(0)); ctx.stroke();
+
+  // área
+  ctx.beginPath();
+  ctx.moveTo(X(xs[0]), Y(0));
+  for (let i=0;i<xs.length;i++) ctx.lineTo(X(xs[i]), Y(ys[i]));
+  ctx.lineTo(X(xs[xs.length-1]), Y(0));
+  ctx.closePath();
+  ctx.fillStyle = color + "33";
+  ctx.fill();
+
+  // curva
+  ctx.beginPath();
+  for (let i=0;i<xs.length;i++){
+    const px = X(xs[i]), py = Y(ys[i]);
+    if (i === 0) ctx.moveTo(px,py); else ctx.lineTo(px,py);
+  }
+  ctx.strokeStyle = color; ctx.lineWidth = 2.2; ctx.lineJoin = "round"; ctx.stroke();
+
+  // extremos
+  let iMax = 0, iMin = 0;
+  ys.forEach((v,i)=>{ if (v > ys[iMax]) iMax = i; if (v < ys[iMin]) iMin = i; });
+  [iMax, iMin].forEach(i=>{
+    if (Math.abs(ys[i]) < 1e-9) return;
+    ctx.fillStyle = color;
+    ctx.beginPath(); ctx.arc(X(xs[i]), Y(ys[i]), 3.5, 0, 7); ctx.fill();
+    label(ctx, fmt(ys[i],2) + " " + unit, X(xs[i]), Y(ys[i]) + (ys[i]>=0 ? -14 : 16), color, 11);
+  });
+
+  label(ctx, title + "  [" + unit + "]", padL + 4, 14, PAL.txt, 12, "left");
+  label(ctx, "x [m]", w-padR, h-10, PAL.txt2, 10, "right");
+}
+
+function drawBeamAll(){
+  drawBeam();
+  const r = APP.beamResult;
+  if (r && r.ok){
+    drawDiagram("#cvV", r.samples.x, r.samples.V, PAL.V, "Esforço cortante V(x)", "kN");
+    drawDiagram("#cvM", r.samples.x, r.samples.M, PAL.M, "Momento fletor M(x)", "kN·m");
+    drawDiagram("#cvN", r.samples.x, r.samples.N, PAL.N, "Esforço normal N(x)", "kN");
+  } else {
+    drawDiagram("#cvV", [], [], PAL.V, "Esforço cortante V(x)", "kN");
+    drawDiagram("#cvM", [], [], PAL.M, "Momento fletor M(x)", "kN·m");
+    drawDiagram("#cvN", [], [], PAL.N, "Esforço normal N(x)", "kN");
+  }
+}
+
+/* ---------- resultados e memória da viga ---------- */
+function showBeamResults(){
+  const res = APP.beamResult;
+  const msg = $("#beamMsg");
+  const outR = $("#beamReactions");
+  const ext = $("#beamExtremes");
+  const mem = $("#beamMemory");
+
+  if (!res || !res.ok){
+    msg.innerHTML = `<div class="msg err">${res ? res.msg : "Modelo não calculado."}</div>`;
+    outR.innerHTML = ""; ext.innerHTML = ""; mem.innerHTML = `<p class="sub">${res ? res.msg : ""}</p>`;
+    return;
+  }
+  msg.innerHTML = res.residual.eqOk
+    ? `<div class="msg ok">Equilíbrio global verificado. Resíduos: ΣFx=${res.residual.resFx.toExponential(2)}, ΣFy=${res.residual.resFy.toExponential(2)}, ΣM=${res.residual.resM.toExponential(2)}</div>`
+    : `<div class="msg warn">Atenção: resíduos de equilíbrio acima da tolerância (${res.residual.resFx.toExponential(2)}, ${res.residual.resFy.toExponential(2)}, ${res.residual.resM.toExponential(2)}).</div>`;
+
+  // reações
+  let html = `<h3>Reações de apoio</h3><div class="tbl-wrap"><table><thead><tr><th>Vínculo</th><th>Posição</th><th class="num">Valor</th></tr></thead><tbody>`;
+  res.reactions.forEach(r=>{
+    const nome = r.kind === "Rx" ? "Reação horizontal" : r.kind === "Ry" ? "Reação vertical" : "Momento de engaste";
+    const u = r.kind === "M" ? "kN·m" : "kN";
+    const sinal = r.kind === "M" ? (r.value >= 0 ? "anti-horário" : "horário") : (r.value >= 0 ? "↑/→" : "↓/←");
+    html += `<tr><td>${nome} (${r.label})</td><td>x = ${fmt(r.x,2)} m</td><td class="num">${fmt(r.value,3)} ${u} <span style="color:var(--txt2)">${sinal}</span></td></tr>`;
+  });
+  html += `</tbody></table></div>`;
+  html += `<div class="kv" style="margin-top:10px">
+    <div class="k">ΣFx (cargas)</div><div class="v">${fmt(res.sums.sumFx,3)} kN</div>
+    <div class="k">ΣFy (cargas)</div><div class="v">${fmt(res.sums.sumFy,3)} kN</div>
+    <div class="k">ΣM₀ (cargas)</div><div class="v">${fmt(res.sums.sumM0,3)} kN·m</div>
+  </div>`;
+  outR.innerHTML = html;
+
+  // extremos
+  const e = res.extremes;
+  ext.innerHTML = `
+    <h3>Valores extremos</h3>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Esforço</th><th class="num">Máximo</th><th>Posição</th><th class="num">Mínimo</th><th>Posição</th></tr></thead>
+      <tbody>
+        <tr><td>V (kN)</td><td class="num">${fmt(e.V.max,3)}</td><td>x = ${fmt(e.V.xMax,2)} m</td><td class="num">${fmt(e.V.min,3)}</td><td>x = ${fmt(e.V.xMin,2)} m</td></tr>
+        <tr><td>M (kN·m)</td><td class="num">${fmt(e.M.max,3)}</td><td>x = ${fmt(e.M.xMax,2)} m</td><td class="num">${fmt(e.M.min,3)}</td><td>x = ${fmt(e.M.xMin,2)} m</td></tr>
+        <tr><td>N (kN)</td><td class="num">${fmt(e.N.max,3)}</td><td>x = ${fmt(e.N.xMax,2)} m</td><td class="num">${fmt(e.N.min,3)}</td><td>x = ${fmt(e.N.xMin,2)} m</td></tr>
+      </tbody>
+    </table></div>`;
+
+  // memória de cálculo
+  const model = APP.beam;
+  let mh = "";
+  mh += step("1. Identificação e unidades", `
+    <p>Projeto: <strong>${$("#rpName").value || "(sem nome)"}</strong> — motor v${CALC_VERSION}</p>
+    <p>Unidades: comprimento em <strong>m</strong>, força em <strong>kN</strong>, momento em <strong>kN·m</strong>, carga distribuída em <strong>kN/m</strong>.</p>`);
+
+  mh += step("2. Geometria e apoios", `
+    <p>Comprimento total L = <strong>${fmt(model.L,3)} m</strong>.</p>
+    <ul>${model.supports.map((s,i)=>`<li>Apoio ${i+1}: x = ${fmt(s.x,3)} m — ${s.type === 'pin' ? 'articulado (Rx, Ry)' : s.type === 'roller' ? 'móvel (Ry)' : 'engaste (Rx, Ry, M)'}</li>`).join("")}</ul>`);
+
+  let lh = model.loads.length ? "<ul>" : "<p>Nenhuma carga aplicada.</p>";
+  model.loads.forEach((l,i)=>{
+    if (l.t === "point") lh += `<li>Carga concentrada ${i+1}: x = ${fmt(l.x,3)} m, Fx = ${fmt(l.Fx,3)} kN, Fy = ${fmt(l.Fy,3)} kN</li>`;
+    else if (l.t === "udl") lh += `<li>Carga distribuída ${i+1}: de x = ${fmt(l.x1,3)} a ${fmt(l.x2,3)} m, w₁ = ${fmt(l.w1,3)} kN/m, w₂ = ${fmt(l.w2,3)} kN/m</li>`;
+    else lh += `<li>Momento concentrado ${i+1}: x = ${fmt(l.x,3)} m, M = ${fmt(l.M,3)} kN·m (anti-horário positivo)</li>`;
+  });
+  mh += step("3. Cargas e pontos de aplicação", lh + "</ul>");
+
+  let rh = `<div class="tbl-wrap"><table><thead><tr><th>Carga</th><th class="num">Fx (kN)</th><th class="num">Fy (kN)</th><th class="num">M₀ (kN·m)</th></tr></thead><tbody>`;
+  model.loads.forEach((l,i)=>{
+    const r = BeamSolver.loadResultant(l);
+    rh += `<tr><td>${i+1} (${l.t === 'point' ? 'concentrada' : l.t === 'udl' ? 'distribuída' : 'momento'})</td>
+      <td class="num">${fmt(r.Fx,3)}</td><td class="num">${fmt(r.Fy,3)}</td><td class="num">${fmt(r.M0,3)}</td></tr>`;
+  });
+  rh += `<tr><th>Total</th><th class="num">${fmt(res.sums.sumFx,3)}</th><th class="num">${fmt(res.sums.sumFy,3)}</th><th class="num">${fmt(res.sums.sumM0,3)}</th></tr>`;
+  rh += `</tbody></table></div><p style="margin-top:6px">Momentos calculados em relação à origem (x = 0, y = 0), anti-horário positivo.</p>`;
+  mh += step("4. Resultantes e momentos das cargas", rh);
+
+  let eq = `<p>Equações de equilíbrio global (corpo rígido 2D):</p>
+    <div class="mono">ΣFx = 0 → ${unknownsExpr(res.unknowns, 'x')} = ${fmt(-res.sums.sumFx,3)}</div>
+    <div class="mono">ΣFy = 0 → ${unknownsExpr(res.unknowns, 'y')} = ${fmt(-res.sums.sumFy,3)}</div>
+    <div class="mono">ΣM₀ = 0 → ${unknownsExpr(res.unknowns, 'm')} = ${fmt(-res.sums.sumM0,3)}</div>`;
+  mh += step("5. Equações de equilíbrio", eq);
+
+  let mat = `<p>Sistema linear A·x = b resolvido por eliminação de Gauss com pivotamento parcial.</p>
+    <div class="mono">A = [${res.A.map(r=>"[" + r.map(v=>fmt(v,3)).join(", ") + "]").join(", ")}]</div>
+    <div class="mono">b = [${res.b.map(v=>fmt(v,3)).join(", ")}]</div>
+    <div class="mono">x = [${res.sol.x.map(v=>fmt(v,4)).join(", ")}]</div>
+    <p>Resíduo máximo |A·x − b| = ${res.sol.residual.toExponential(3)}</p>`;
+  mh += step("6. Sistema de equações e resolução numérica", mat);
+
+  let re = `<div class="tbl-wrap"><table><thead><tr><th>Incógnita</th><th class="num">Valor</th></tr></thead><tbody>`;
+  res.reactions.forEach(r=>{
+    re += `<tr><td>${r.label} — ${r.kind === 'Rx' ? 'reação horizontal' : r.kind === 'Ry' ? 'reação vertical' : 'momento de engaste'} em x = ${fmt(r.x,2)} m</td>
+      <td class="num">${fmt(r.value,4)} ${r.kind === 'M' ? 'kN·m' : 'kN'}</td></tr>`;
+  });
+  re += `</tbody></table></div>`;
+  mh += step("7. Reações de apoio", re);
+
+  mh += step("8. Esforços internos — valores extremos", `
+    <p>V máx = ${fmt(e.V.max,3)} kN em x = ${fmt(e.V.xMax,2)} m · V mín = ${fmt(e.V.min,3)} kN em x = ${fmt(e.V.xMin,2)} m</p>
+    <p>M máx = ${fmt(e.M.max,3)} kN·m em x = ${fmt(e.M.xMax,2)} m · M mín = ${fmt(e.M.min,3)} kN·m em x = ${fmt(e.M.xMin,2)} m</p>
+    <p>N máx = ${fmt(e.N.max,3)} kN · N mín = ${fmt(e.N.min,3)} kN</p>`);
+
+  mh += step("9. Verificação de equilíbrio e validade", `
+    <p>ΣFx residual = ${res.residual.resFx.toExponential(3)} kN</p>
+    <p>ΣFy residual = ${res.residual.resFy.toExponential(3)} kN</p>
+    <p>ΣM₀ residual = ${res.residual.resM.toExponential(3)} kN·m</p>
+    <p><strong>${res.residual.eqOk ? "Modelo matematicamente válido para as hipóteses adotadas." : "Resíduos elevados — verifique o modelo."}</strong></p>`);
+
+  mh += step("10. Hipóteses e limitações", `
+    <ul>
+      <li>Viga reta, material homogêneo, pequenas deformações; análise de 1ª ordem.</li>
+      <li>Apoios ideais (sem atrito, sem recalque); vínculos perfeitos.</li>
+      <li>Cargas estáticas aplicadas no plano da viga.</li>
+      <li>Não são verificadas resistência, estabilidade, flambagem, fadiga ou requisitos normativos.</li>
+      <li>Este módulo resolve apenas estruturas <strong>isostáticas</strong> (3 incógnitas de reação).</li>
+    </ul>`);
+
+  mem.innerHTML = mh;
+}
+
+function step(title, body){
+  return `<details class="step" open><summary>${title}</summary><div class="body">${body}</div></details>`;
+}
+function unknownsExpr(unknowns, type){
+  const parts = [];
+  unknowns.forEach(u=>{
+    if (type === "x" && u.kind === "Rx") parts.push(`Rx${u.sup+1}`);
+    if (type === "y" && u.kind === "Ry") parts.push(`Ry${u.sup+1}`);
+    if (type === "m" && u.kind === "Ry") parts.push(`${fmt(u.x,2)}·Ry${u.sup+1}`);
+    if (type === "m" && u.kind === "M")  parts.push(`M${u.sup+1}`);
+  });
+  return parts.length ? parts.join(" + ") : "0";
+}
+
+/* ============================================================================
+   TRELIÇAS — UI e render
+   ============================================================================ */
+function renderTrussTables(){
+  const t = APP.truss;
+  // nós
+  const tbN = $("#tblNodes tbody");
+  tbN.innerHTML = "";
+  t.nodes.forEach((nd,i)=>{
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>N${i+1}</td>
+      <td><input type="number" value="${nd.x}" step="0.1" data-k="x" style="width:80px"></td>
+      <td><input type="number" value="${nd.y}" step="0.1" data-k="y" style="width:80px"></td>
+      <td><button class="btn danger sm">✕</button></td>`;
+    tr.querySelectorAll("input").forEach(inp=>{
+      inp.addEventListener("input", ()=>{ t.nodes[i][inp.dataset.k] = num(inp); });
+    });
+    tr.querySelector("button").addEventListener("click", ()=>{
+      t.nodes.splice(i,1);
+      t.bars = t.bars.filter(b=>b.i!==i && b.j!==i).map(b=>({i: b.i>i?b.i-1:b.i, j: b.j>i?b.j-1:b.j}));
+      t.supports = t.supports.filter(s=>s.node!==i).map(s=>({...s, node: s.node>i?s.node-1:s.node}));
+      t.loads = t.loads.filter(l=>l.node!==i).map(l=>({...l, node: l.node>i?l.node-1:l.node}));
+      renderTrussTables(); drawTruss();
+    });
+    tbN.appendChild(tr);
+  });
+
+  // barras
+  const tbB = $("#tblBars tbody");
+  tbB.innerHTML = "";
+  t.bars.forEach((b,i)=>{
+    const opts = t.nodes.map((_,k)=>`<option value="${k}">N${k+1}</option>`).join("");
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>B${i+1}</td>
+      <td><select class="bi">${opts}</select></td>
+      <td><select class="bj">${opts}</select></td>
+      <td><button class="btn danger sm">✕</button></td>`;
+    tr.querySelector(".bi").value = b.i;
+    tr.querySelector(".bj").value = b.j;
+    tr.querySelector(".bi").addEventListener("change", e=>{ t.bars[i].i = +e.target.value; });
+    tr.querySelector(".bj").addEventListener("change", e=>{ t.bars[i].j = +e.target.value; });
+    tr.querySelector("button").addEventListener("click", ()=>{ t.bars.splice(i,1); renderTrussTables(); drawTruss(); });
+    tbB.appendChild(tr);
+  });
+
+  // apoios
+  const tbS = $("#tblSup tbody");
+  tbS.innerHTML = "";
+  t.supports.forEach((s,i)=>{
+    const opts = t.nodes.map((_,k)=>`<option value="${k}">N${k+1}</option>`).join("");
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td><select class="sn">${opts}</select></td>
+      <td><select class="st">
+        <option value="pin">Articulado (Rx+Ry)</option>
+        <option value="roller-y">Móvel vertical (Ry)</option>
+        <option value="roller-x">Móvel horizontal (Rx)</option>
+      </select></td>
+      <td><button class="btn danger sm">✕</button></td>`;
+    tr.querySelector(".sn").value = s.node;
+    tr.querySelector(".st").value = s.type;
+    tr.querySelector(".sn").addEventListener("change", e=>{ t.supports[i].node = +e.target.value; });
+    tr.querySelector(".st").addEventListener("change", e=>{ t.supports[i].type = e.target.value; });
+    tr.querySelector("button").addEventListener("click", ()=>{ t.supports.splice(i,1); renderTrussTables(); drawTruss(); });
+    tbS.appendChild(tr);
+  });
+
+  // cargas
+  const tbL = $("#tblLoads tbody");
+  tbL.innerHTML = "";
+  t.loads.forEach((l,i)=>{
+    const opts = t.nodes.map((_,k)=>`<option value="${k}">N${k+1}</option>`).join("");
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td><select class="ln">${opts}</select></td>
+      <td><input type="number" class="lfx" value="${l.Fx}" step="0.1" style="width:80px"></td>
+      <td><input type="number" class="lfy" value="${l.Fy}" step="0.1" style="width:80px"></td>
+      <td><button class="btn danger sm">✕</button></td>`;
+    tr.querySelector(".ln").value = l.node;
+    tr.querySelector(".ln").addEventListener("change", e=>{ t.loads[i].node = +e.target.value; });
+    tr.querySelector(".lfx").addEventListener("input", e=>{ t.loads[i].Fx = num(e.target); });
+    tr.querySelector(".lfy").addEventListener("input", e=>{ t.loads[i].Fy = num(e.target); });
+    tr.querySelector("button").addEventListener("click", ()=>{ t.loads.splice(i,1); renderTrussTables(); drawTruss(); });
+    tbL.appendChild(tr);
+  });
+}
+
+function drawTruss(){
+  const cv = $("#cvTruss");
+  const {ctx, w, h} = setupCanvas(cv);
+  ctx.fillStyle = PAL.bg; ctx.fillRect(0,0,w,h);
+  const t = APP.truss;
+  if (!t || !t.nodes.length){ label(ctx, "Sem nós definidos", w/2, h/2, PAL.txt2, 13); return; }
+
+  const xs = t.nodes.map(n=>n.x), ys = t.nodes.map(n=>n.y);
+  let minX = Math.min(...xs), maxX = Math.max(...xs), minY = Math.min(...ys), maxY = Math.max(...ys);
+  if (maxX-minX < 1e-9){ maxX += 1; minX -= 1; }
+  if (maxY-minY < 1e-9){ maxY += 1; minY -= 1; }
+  const pad = 56;
+  const sx = (w-2*pad)/(maxX-minX), sy = (h-2*pad)/(maxY-minY);
+  const s = Math.min(sx, sy);
+  const cx = (minX+maxX)/2, cy = (minY+maxY)/2;
+  const X = x => w/2 + (x-cx)*s;
+  const Y = y => h/2 - (y-cy)*s;
+
+  ctx.strokeStyle = PAL.grid; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(0, Y(0)); ctx.lineTo(w, Y(0)); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(X(0), 0); ctx.lineTo(X(0), h); ctx.stroke();
+
+  const res = APP.trussResult;
+  const maxF = res && res.ok ? Math.max(1e-9, ...res.barForces.map(Math.abs)) : 1;
+
+  t.bars.forEach((b,i)=>{
+    const n1 = t.nodes[b.i], n2 = t.nodes[b.j];
+    if (!n1 || !n2) return;
+    let color = PAL.beam, lw = 3;
+    let txt = "";
+    if (res && res.ok){
+      const T = res.barForces[i];
+      if (Math.abs(T) < 1e-7){ color = PAL.zero; lw = 2.5; }
+      else if (T > 0){ color = PAL.tension; lw = 2 + 4*Math.abs(T)/maxF; }
+      else { color = PAL.compression; lw = 2 + 4*Math.abs(T)/maxF; }
+      txt = fmt(T,2);
+    }
+    ctx.strokeStyle = color; ctx.lineWidth = lw; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(X(n1.x), Y(n1.y)); ctx.lineTo(X(n2.x), Y(n2.y)); ctx.stroke();
+    if (txt){
+      label(ctx, txt, (X(n1.x)+X(n2.x))/2, (Y(n1.y)+Y(n2.y))/2 - 9, color, 11);
+    }
+  });
+
+  // nós
+  t.nodes.forEach((n,i)=>{
+    ctx.fillStyle = PAL.accent;
+    ctx.beginPath(); ctx.arc(X(n.x), Y(n.y), 5, 0, 7); ctx.fill();
+    label(ctx, "N"+(i+1), X(n.x)+11, Y(n.y)-11, PAL.txt, 12);
+  });
+
+  // apoios
+  t.supports.forEach(s=>{
+    const n = t.nodes[s.node];
+    if (!n) return;
+    const x = X(n.x), y = Y(n.y);
+    ctx.strokeStyle = PAL.react; ctx.fillStyle = PAL.react; ctx.lineWidth = 2;
+    if (s.type === "pin"){
+      ctx.beginPath(); ctx.moveTo(x,y+7); ctx.lineTo(x-11,y+27); ctx.lineTo(x+11,y+27); ctx.closePath(); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x-14,y+27); ctx.lineTo(x+14,y+27); ctx.stroke();
+    } else if (s.type === "roller-y"){
+      ctx.beginPath(); ctx.moveTo(x,y+7); ctx.lineTo(x-11,y+25); ctx.lineTo(x+11,y+25); ctx.closePath(); ctx.stroke();
+      ctx.beginPath(); ctx.arc(x-6,y+30,4,0,7); ctx.stroke();
+      ctx.beginPath(); ctx.arc(x+6,y+30,4,0,7); ctx.stroke();
+    } else {
+      ctx.beginPath(); ctx.moveTo(x-7,y); ctx.lineTo(x-27,y-11); ctx.lineTo(x-27,y+11); ctx.closePath(); ctx.stroke();
+    }
+  });
+
+  // cargas
+  t.loads.forEach(l=>{
+    const n = t.nodes[l.node];
+    if (!n) return;
+    const mag = Math.hypot(l.Fx, l.Fy);
+    if (mag < 1e-9) return;
+    const x0 = X(n.x), y0 = Y(n.y);
+    const k = 42/mag;
+    arrow(ctx, x0 - l.Fx*k, y0 + l.Fy*k, x0 - Math.sign(l.Fx||1)*6*(l.Fx?1:0), y0, PAL.load, 2.2);
+    label(ctx, fmt(mag,1)+" kN", x0 - l.Fx*k*1.15, y0 + l.Fy*k*1.15 - 10, PAL.load, 11);
+  });
+}
+
+function showTrussResults(){
+  const res = APP.trussResult;
+  const msg = $("#trussMsg");
+  const out = $("#trussOut");
+  const mem = $("#trussMemory");
+  if (!res || !res.ok){
+    msg.innerHTML = `<div class="msg err">${res ? res.msg : "Modelo não calculado."}</div>`;
+    out.innerHTML = ""; mem.innerHTML = "";
+    return;
+  }
+  msg.innerHTML = res.maxRes < 1e-6
+    ? `<div class="msg ok">Equilíbrio nodal verificado. Resíduo máximo = ${res.maxRes.toExponential(2)} kN</div>`
+    : `<div class="msg warn">Resíduo nodal máximo = ${res.maxRes.toExponential(2)} kN — verifique o modelo.</div>`;
+
+  let html = `<h3>Reações de apoio</h3><div class="tbl-wrap"><table><thead><tr><th>Vínculo</th><th class="num">Valor</th></tr></thead><tbody>`;
+  res.reactions.forEach(r=>{
+    html += `<tr><td>${r.label} no nó N${r.node+1} (${r.dir === 'x' ? 'horizontal' : 'vertical'})</td><td class="num">${fmt(r.value,3)} kN</td></tr>`;
+  });
+  html += `</tbody></table></div>`;
+
+  html += `<h3>Esforços axiais nas barras</h3><div class="tbl-wrap"><table><thead><tr><th>Barra</th><th>Nós</th><th class="num">Comprimento</th><th class="num">Esforço (kN)</th><th>Estado</th></tr></thead><tbody>`;
+  APP.truss.bars.forEach((b,i)=>{
+    const T = res.barForces[i];
+    const estado = Math.abs(T) < 1e-7 ? '<span class="tag warn">nula</span>'
+      : T > 0 ? '<span class="tag ok">tração</span>' : '<span class="tag err">compressão</span>';
+    html += `<tr><td>B${i+1}</td><td>N${b.i+1}–N${b.j+1}</td><td class="num">${fmt(res.geo[i].L,3)} m</td><td class="num">${fmt(T,3)}</td><td>${estado}</td></tr>`;
+  });
+  html += `</tbody></table></div>`;
+  out.innerHTML = html;
+
+  // memória
+  let mh = "";
+  mh += step("1. Identificação", `<p>Projeto: <strong>${$("#rpName").value || "(sem nome)"}</strong> — motor v${CALC_VERSION}</p>
+    <p>Unidades: m, kN. Treliça plana, barras biarticuladas, cargas aplicadas exclusivamente nos nós.</p>`);
+
+  let gh = `<p>Nós:</p><ul>${APP.truss.nodes.map((n,i)=>`<li>N${i+1}: (${fmt(n.x,3)}, ${fmt(n.y,3)}) m</li>`).join("")}</ul>`;
+  gh += `<p>Barras:</p><ul>${APP.truss.bars.map((b,i)=>`<li>B${i+1}: N${b.i+1}–N${b.j+1}, L = ${fmt(res.geo[i].L,3)} m, cosθ = ${fmt(res.geo[i].cx,4)}, senθ = ${fmt(res.geo[i].cy,4)}</li>`).join("")}</ul>`;
+  mh += step("2. Geometria", gh);
+
+  mh += step("3. Vínculos e cargas", `
+    <p>Apoios: ${APP.truss.supports.map(s=>`N${s.node+1} (${s.type})`).join(", ") || "nenhum"}</p>
+    <p>Cargas nodais: ${APP.truss.loads.map(l=>`N${l.node+1}: (${fmt(l.Fx,2)}, ${fmt(l.Fy,2)}) kN`).join("; ") || "nenhuma"}</p>`);
+
+  mh += step("4. Sistema de equilíbrio", `
+    <p>Para cada nó i e cada barra b que o conecta ao nó j:</p>
+    <div class="mono">ΣFx: Σ<sub>b</sub> ±T<sub>b</sub>·cosθ<sub>b</sub> + Rx<sub>i</sub> + Fx<sub>i</sub> = 0</div>
+    <div class="mono">ΣFy: Σ<sub>b</sub> ±T<sub>b</sub>·senθ<sub>b</sub> + Ry<sub>i</sub> + Fy<sub>i</sub> = 0</div>
+    <p>Sinal + quando o nó é a extremidade inicial da barra, − quando é a extremidade final.</p>
+    <p>Sistema 2n × (m+r): 2·${APP.truss.nodes.length} = ${2*APP.truss.nodes.length} equações; ${APP.truss.bars.length} barras + ${res.reactCols.length} reações = ${APP.truss.bars.length + res.reactCols.length} incógnitas.</p>
+    <p>Resíduo máximo do sistema: ${res.globalRes.toExponential(3)}</p>`);
+
+  let nh = "";
+  APP.truss.nodes.forEach((n,i)=>{
+    const r = res.nodeResidual[i];
+    nh += `<p><strong>Nó N${i+1}</strong>: ΣFx = ${r.Fx.toExponential(2)} kN · ΣFy = ${r.Fy.toExponential(2)} kN</p>`;
+  });
+  mh += step("5. Verificação de equilíbrio nodal", nh + `<p>Resíduo máximo: <strong>${res.maxRes.toExponential(3)} kN</strong></p>`);
+
+  mh += step("6. Hipóteses e limitações", `
+    <ul>
+      <li>Barras biarticuladas, cargas apenas nos nós, treliça plana ideal.</li>
+      <li>Peso próprio das barras não considerado neste módulo.</li>
+      <li>Método dos nós implementado via sistema linear global de equilíbrio (equivalente ao método dos nós).</li>
+      <li>O método das seções não está implementado como ferramenta interativa.</li>
+      <li>Não são calculados deslocamentos nem verificações de resistência/estabilidade.</li>
+    </ul>`);
+
+  mem.innerHTML = mh;
+}
+
+/* ============================================================================
+   3D
+   ============================================================================ */
+const Cam3D = { yaw: -0.7, pitch: 0.55, zoom: 1 };
+
+function renderF3List(){
+  const box = $("#f3List");
+  box.innerHTML = "";
+  APP.f3.forEach((f,i)=>{
+    const d = document.createElement("div");
+    d.className = "load-card";
+    d.innerHTML = `
+      <div class="lc-head">
+        <input class="fn" value="${f.nome}" style="max-width:80px">
+        <span class="tag ok">Força ${i+1}</span>
+        <button class="btn danger sm" data-del="${i}">✕</button>
+      </div>
+      <div class="lc-body">
+        <div><label class="f">Fx (kN)</label><input type="number" class="vx" value="${f.Fx}" step="0.1"></div>
+        <div><label class="f">Fy (kN)</label><input type="number" class="vy" value="${f.Fy}" step="0.1"></div>
+        <div><label class="f">Fz (kN)</label><input type="number" class="vz" value="${f.Fz}" step="0.1"></div>
+        <div><label class="f">x (m)</label><input type="number" class="px" value="${f.x}" step="0.1"></div>
+        <div><label class="f">y (m)</label><input type="number" class="py" value="${f.y}" step="0.1"></div>
+        <div><label class="f">z (m)</label><input type="number" class="pz" value="${f.z}" step="0.1"></div>
+      </div>`;
+    d.querySelector("[data-del]").addEventListener("click", ()=>{
+      APP.f3.splice(i,1); renderF3List(); draw3D();
+    });
+    box.appendChild(d);
+  });
+}
+function readF3(){
+  APP.f3 = $$("#f3List .load-card").map((c,i)=>({
+    nome: c.querySelector(".fn").value || ("F"+(i+1)),
+    Fx: num(c.querySelector(".vx")), Fy: num(c.querySelector(".vy")), Fz: num(c.querySelector(".vz")),
+    x: num(c.querySelector(".px")), y: num(c.querySelector(".py")), z: num(c.querySelector(".pz"))
+  }));
+}
+
+function project3(p){
+  const cy = Math.cos(Cam3D.yaw), sy = Math.sin(Cam3D.yaw);
+  const cp = Math.cos(Cam3D.pitch), sp = Math.sin(Cam3D.pitch);
+  const x1 =  p[0]*cy - p[1]*sy;
+  const y1 =  p[0]*sy + p[1]*cy;
+  const z1 =  p[2];
+  const hx = x1;
+  const vy = z1*cp - y1*sp;
+  const depth = y1*cp + z1*sp;
+  return [hx, -vy, depth];
+}
+
+function draw3D(){
+  const cv = $("#cv3d");
+  const {ctx, w, h} = setupCanvas(cv);
+  ctx.fillStyle = PAL.bg; ctx.fillRect(0,0,w,h);
+
+  const res = APP.f3Result;
+  const allPts = [[0,0,0]];
+  APP.f3.forEach(f=>{
+    allPts.push([f.x, f.y, f.z]);
+    allPts.push([f.x + f.Fx*0.4, f.y + f.Fy*0.4, f.z + f.Fz*0.4]);
+  });
+  if (res) allPts.push([res.R[0]*0.5, res.R[1]*0.5, res.R[2]*0.5]);
+
+  const proj = allPts.map(project3);
+  let maxAbs = 1;
+  proj.forEach(p=>{ maxAbs = Math.max(maxAbs, Math.abs(p[0]), Math.abs(p[1])); });
+  const scale = Math.min(w,h)*0.36/maxAbs * Cam3D.zoom;
+  const cx = w/2, cy = h/2;
+  const S = p => { const q = project3(p); return [cx + q[0]*scale, cy + q[1]*scale]; };
+
+  // grade no plano XY
+  ctx.strokeStyle = PAL.grid; ctx.lineWidth = 1;
+  const G = Math.ceil(maxAbs);
+  for (let k=-G;k<=G;k++){
+    const a = S([k,-G,0]), b = S([k,G,0]);
+    ctx.beginPath(); ctx.moveTo(a[0],a[1]); ctx.lineTo(b[0],b[1]); ctx.stroke();
+    const c = S([-G,k,0]), d = S([G,k,0]);
+    ctx.beginPath(); ctx.moveTo(c[0],c[1]); ctx.lineTo(d[0],d[1]); ctx.stroke();
+  }
+
+  // eixos
+  const O = S([0,0,0]);
+  const axes = [
+    {p:[G*1.15,0,0], c:"#f87171", n:"X"},
+    {p:[0,G*1.15,0], c:"#34d399", n:"Y"},
+    {p:[0,0,G*1.15], c:"#60a5fa", n:"Z"}
+  ];
+  axes.forEach(a=>{
+    const P = S(a.p);
+    arrow(ctx, O[0], O[1], P[0], P[1], a.c, 2);
+    label(ctx, a.n, P[0]+10, P[1], a.c, 13);
+  });
+
+  // forças
+  APP.f3.forEach((f,i)=>{
+    const P0 = S([f.x, f.y, f.z]);
+    const P1 = S([f.x + f.Fx*0.5, f.y + f.Fy*0.5, f.z + f.Fz*0.5]);
+    if (Math.hypot(P1[0]-P0[0], P1[1]-P0[1]) > 2) arrow(ctx, P0[0],P0[1],P1[0],P1[1], PAL.load, 2.4);
+    ctx.fillStyle = PAL.accent;
+    ctx.beginPath(); ctx.arc(P0[0],P0[1],3.5,0,7); ctx.fill();
+    label(ctx, f.nome || ("F"+(i+1)), P1[0]+11, P1[1]-9, PAL.load, 12);
+  });
+
+  // resultante
+  if (res && res.Rm > 1e-9){
+    const P0 = S([0,0,0]);
+    const P1 = S([res.R[0]*0.5, res.R[1]*0.5, res.R[2]*0.5]);
+    arrow(ctx, P0[0],P0[1],P1[0],P1[1], PAL.react, 3);
+    label(ctx, "R = " + fmt(res.Rm,2) + " kN", P1[0]+14, P1[1]-12, PAL.react, 12);
+  }
+  label(ctx, "Arraste para girar · roda do mouse para zoom", w/2, h-12, PAL.txt2, 11);
+}
+
+/* ============================================================================
+   FUNDAMENTOS
+   ============================================================================ */
+const FUNDAMENTOS = [
+  {n:1, t:"Grandezas escalares e vetoriais", d:"Escalares ficam completamente definidos por um número e uma unidade (massa, tempo, temperatura). Vetoriais exigem módulo, direção e sentido (força, velocidade, momento).", f:"F⃗ = F·û ,  |û| = 1", e:"Uma força de 10 kN a 30° tem Fx = 8,660 kN e Fy = 5,000 kN."},
+  {n:2, t:"Sistemas de unidades e conversões", d:"O SI usa newton (N) para força, metro (m) para comprimento e N·m para momento. 1 kN = 1000 N; 1 kN·m = 1000 N·m; 1 kgf ≈ 9,80665 N.", f:"1 kN = 10³ N ;  1 kgf = 9,80665 N", e:"Uma carga de 2 tf ≈ 19,61 kN."},
+  {n:3, t:"Vetores e decomposição de forças", d:"A decomposição projeta o vetor nos eixos ortogonais. Em 2D: Fx = F·cosθ e Fy = F·senθ, com θ medido a partir do eixo +x.", f:"Fx = F·cos θ ;  Fy = F·sen θ ;  F = √(Fx²+Fy²)", e:"F = 10 kN, θ = 30° → Fx = 8,660 kN, Fy = 5,000 kN."},
+  {n:4, t:"Resultante de forças concorrentes", d:"A resultante é a soma vetorial. Para forças concorrentes em um ponto, a resultante também passa por esse ponto.", f:"R⃗ = Σ F⃗ᵢ", e:"Duas forças de 10 kN opostas → R = 0 (verificado no módulo Forças)."},
+  {n:5, t:"Soma vetorial gráfica e analítica", d:"Graficamente aplica-se a regra do polígono (ponta-a-cauda); analiticamente somam-se as componentes.", f:"Rx = ΣFx ;  Ry = ΣFy ;  θR = atan2(Ry, Rx)", e:"Sistema com F1=(10;0) e F2=(0;10) → R = (10;10), |R| = 14,142 kN, θ = 45°."},
+  {n:6, t:"Forças coplanares e espaciais", d:"Sistemas coplanares têm 3 equações de equilíbrio (ΣFx, ΣFy, ΣM). Sistemas espaciais exigem 6 (ΣFx, ΣFy, ΣFz, ΣMx, ΣMy, ΣMz).", f:"2D: ΣFx=0, ΣFy=0, ΣM=0 — 3D: 6 equações", e:"Uma partícula espacial livre tem 3 incógnitas; um corpo rígido espacial tem 6."},
+  {n:7, t:"Momento de uma força em relação a um ponto", d:"O momento mede a tendência de rotação em torno de um ponto. Em 2D: M = F·d, com d o braço perpendicular. Em 3D usa-se o produto vetorial.", f:"M⃗_O = r⃗ × F⃗  →  |M| = F·d", e:"F = 5 kN vertical em x = 3 m → M_O = 15 kN·m (horário se F for para baixo)."},
+  {n:8, t:"Binários e momentos concentrados", d:"Um binário é formado por duas forças iguais, opostas e não colineares. O momento do binário é livre (não depende do ponto de redução).", f:"M = F · d (perpendicular entre as forças)", e:"Duas forças de 4 kN separadas por 0,5 m formam um binário de 2 kN·m."},
+  {n:9, t:"Redução de sistemas de forças", d:"Qualquer sistema pode ser reduzido a uma resultante aplicada em um ponto e um binário (sistema força-binário). Se R e M forem perpendiculares, existe eixo central.", f:"R⃗ = ΣF⃗ᵢ ;  M⃗_O = Σ(r⃗ᵢ × F⃗ᵢ)", e:"O módulo Forças & Momentos calcula exatamente essa redução na origem."},
+  {n:10, t:"Equilíbrio de partículas", d:"Uma partícula está em equilíbrio quando a resultante das forças é nula. Em 2D, isso fornece 2 equações; em 3D, 3 equações.", f:"ΣF⃗ = 0", e:"Um nó de treliça com duas barras e uma carga é resolvido por essas duas equações."},
+  {n:11, t:"Equilíbrio de corpos rígidos", d:"Além da resultante nula, o momento resultante deve ser nulo. Em 2D são 3 equações independentes; em 3D, 6.", f:"ΣF⃗ = 0 e ΣM⃗_O = 0", e:"Viga biapoiada com carga central: 3 equações determinam as 3 reações."},
+  {n:12, t:"Diagramas de corpo livre", d:"O DCL isola o corpo e substitui os vínculos por reações. É a etapa mais importante da modelagem: erro no DCL invalida todo o cálculo.", f:"Vínculos → reações: móvel (1), articulado (2), engaste (3)", e:"O módulo Vigas desenha o DCL automaticamente a partir do modelo."},
+  {n:13, t:"Forças internas e externas", d:"Forças externas atuam sobre o corpo; as internas surgem entre partes do corpo. O método das seções expõe os esforços internos N, V, M.", f:"N(x), V(x), M(x) obtidos por equilíbrio da parte seccionada", e:"Viga biapoiada de 6 m com 12 kN ao centro: M_máx = 18 kN·m."},
+  {n:14, t:"Centroide e centro de gravidade", d:"O centroide é a posição média geométrica da área; o centro de gravidade pondera pela massa específica. Para peso próprio de viga, a resultante atua no centroide.", f:"x̄ = ∫x dA / ∫dA ;  ȳ = ∫y dA / ∫dA", e:"Retângulo b×h: centroide no cruzamento das diagonais."},
+  {n:15, t:"Momentos de 1ª e 2ª ordem de áreas", d:"Momentos de 1ª ordem (Qx, Qy) localizam o centroide. Momentos de 2ª ordem (Ix, Iy, J) medem a resistência à flexão e à torção.", f:"Qx = ∫y dA ;  Ix = ∫y² dA ;  Iy = ∫x² dA", e:"Retângulo b×h: Ix = b·h³/12 em relação ao eixo centroidal."},
+  {n:16, t:"Atrito estático e reações de contato", d:"O atrito estático se opõe à tendência de movimento e é limitado por μs·N. Enquanto não há escorregamento, a força de atrito é determinada pelo equilíbrio.", f:"F_at ≤ μs · N", e:"Bloco de 10 kN com μs = 0,3: força de atrito máxima = 3 kN."},
+  {n:17, t:"Cabos e forças de tração", d:"Cabos ideais trabalham exclusivamente à tração, ao longo do próprio eixo. Em cabos com cargas distribuídas, a forma é uma catenária (ou parábola para peso próprio desprezível).", f:"T ≥ 0 (tração) ;  equilíbrio nodal ΣF = 0", e:"Cabo com carga vertical P: a tração cresce com a redução da flecha."},
+  {n:18, t:"Princípio dos trabalhos virtuais", d:"Para um corpo em equilíbrio, o trabalho virtual das forças externas é igual ao trabalho virtual das forças internas, para qualquer deslocamento virtual compatível.", f:"δW_ext = δW_int", e:"Módulo complementar — não implementado como simulador interativo neste aplicativo."}
+];
+
+function renderFundamentos(){
+  const box = $("#fundList");
+  box.innerHTML = FUNDAMENTOS.map(t=>`
+    <div class="topic">
+      <h4>${t.n}. ${t.t}</h4>
+      <p>${t.d}</p>
+      <div class="fx">${t.f}</div>
+      <div class="ex"><strong>Exemplo:</strong> ${t.e}</div>
+    </div>`).join("");
+}
+
+/* ============================================================================
+   DESAFIOS
+   ============================================================================ */
+function mulberry32(a){
+  return function(){
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+const GAME = { current: null };
+
+function newGameExercise(){
+  const lvl = +$("#gLevel").value;
+  const seed = Math.floor(num($("#gSeed"), 12345));
+  const rnd = mulberry32(seed);
+  const R = (a,b) => a + rnd()*(b-a);
+  const Ri = (a,b) => Math.round(R(a,b));
+  const cur = {level:lvl, seed, input:{}};
+
+  if (lvl === 1){
+    const F = Ri(10, 60), ang = Ri(15, 75);
+    const th = ang*Math.PI/180;
+    cur.q = `Decomponha a força de <strong>${F} kN</strong> aplicada a <strong>${ang}°</strong> em relação ao eixo +x. Informe Fx e Fy.`;
+    cur.fields = [{k:"Fx", label:"Fx (kN)"}, {k:"Fy", label:"Fy (kN)"}];
+    cur.ans = {Fx: F*Math.cos(th), Fy: F*Math.sin(th)};
+    cur.sol = `Fx = F·cos θ = ${F}·cos(${ang}°) = ${fmt(F*Math.cos(th),3)} kN<br>Fy = F·sen θ = ${F}·sen(${ang}°) = ${fmt(F*Math.sin(th),3)} kN`;
+  }
+  else if (lvl === 2){
+    const F1 = Ri(8,30), F2 = Ri(8,30), a2 = Ri(30,120);
+    const th2 = a2*Math.PI/180;
+    const Rm = Math.hypot(F1 + F2*Math.cos(th2), F2*Math.sin(th2));
+    cur.q = `Determine o módulo da resultante de F₁ = ${F1} kN (eixo +x) e F₂ = ${F2} kN a ${a2}° do eixo +x.`;
+    cur.fields = [{k:"R", label:"|R| (kN)"}];
+    cur.ans = {R: Rm};
+    cur.sol = `Rx = ${F1} + ${F2}·cos(${a2}°) = ${fmt(F1 + F2*Math.cos(th2),3)} kN<br>
+      Ry = ${F2}·sen(${a2}°) = ${fmt(F2*Math.sin(th2),3)} kN<br>
+      |R| = √(Rx² + Ry²) = ${fmt(Rm,3)} kN`;
+  }
+  else if (lvl === 3){
+    const F = Ri(5,25), d = Ri(2,8);
+    const M = F*d;
+    cur.q = `Uma força vertical de <strong>${F} kN</strong> atua a <strong>${d} m</strong> do ponto O. Determine o módulo do momento em relação a O.`;
+    cur.fields = [{k:"M", label:"|M| (kN·m)"}];
+    cur.ans = {M};
+    cur.sol = `|M| = F · d = ${F} · ${d} = ${fmt(M,3)} kN·m`;
+  }
+  else if (lvl === 4){
+    const L = Ri(4,10), P = Ri(10,40), a = Ri(1, L-1);
+    const model = {L, supports:[{x:0,type:"pin"},{x:L,type:"roller"}], loads:[{t:"point", x:a, Fx:0, Fy:-P}]};
+    const r = BeamSolver.solve(model);
+    cur.q = `Viga biapoiada com L = ${L} m, apoio articulado em x = 0 e apoio móvel em x = ${L} m. Carga concentrada de <strong>${P} kN</strong> (para baixo) em x = ${a} m. Determine a reação vertical no apoio da esquerda.`;
+    cur.fields = [{k:"Ra", label:"Reação esquerda (kN)"}];
+    cur.ans = {Ra: r.reactions.find(x=>x.kind==="Ry" && x.x===0).value};
+    cur.sol = `ΣM_B = 0 → Ra·${L} − ${P}·(${L}-${a}) = 0 → Ra = ${fmt(cur.ans.Ra,3)} kN<br>
+      Verificação: Rb = ${fmt(P - cur.ans.Ra,3)} kN`;
+  }
+  else {
+    const L = Ri(4,10), q = Ri(2,12);
+    const model = {L, supports:[{x:0,type:"pin"},{x:L,type:"roller"}], loads:[{t:"udl", x1:0, x2:L, w1:q, w2:q}]};
+    const r = BeamSolver.solve(model);
+    cur.q = `Viga biapoiada com L = ${L} m e carga distribuída uniforme de <strong>${q} kN/m</strong> em todo o vão. Determine o momento fletor máximo.`;
+    cur.fields = [{k:"M", label:"M máximo (kN·m)"}];
+    cur.ans = {M: r.extremes.M.max};
+    cur.sol = `R = q·L/2 = ${fmt(q*L/2,3)} kN<br>M_máx = q·L²/8 = ${fmt(q*L*L/8,3)} kN·m`;
+  }
+  GAME.current = cur;
+  renderGameExercise();
+}
+
+function renderGameExercise(){
+  const cur = GAME.current;
+  if (!cur) return;
+  const box = $("#gBody");
+  box.innerHTML = `
+    <div class="msg info"><strong>Nível ${cur.level}</strong> · semente ${cur.seed}</div>
+    <p>${cur.q}</p>
+    <div class="row">
+      ${cur.fields.map(f=>`<div><label class="f">${f.label}</label><input type="number" step="0.001" data-k="${f.k}" class="gi"></div>`).join("")}
+      <div class="fixed"><button class="btn" id="gCheck">Verificar</button></div>
+      <div class="fixed"><button class="btn ghost" id="gShow">Ver resolução</button></div>
+    </div>
+    <div id="gFeedback" style="margin-top:10px"></div>`;
+  $("#gCheck").addEventListener("click", checkGameAnswer);
+  $("#gShow").addEventListener("click", ()=>{
+    $("#gFeedback").innerHTML = `<div class="msg info"><strong>Resolução:</strong><br>${cur.sol}</div>`;
+  });
+}
+
+function checkGameAnswer(){
+  const cur = GAME.current;
+  const tol = Math.max(0.001, num($("#gTol"), 0.02));
+  let allOk = true;
+  const lines = [];
+  for (const f of cur.fields){
+    const el = $(`#gBody input[data-k="${f.k}"]`);
+    const v = num(el, NaN);
+    const ref = cur.ans[f.k];
+    const scale = Math.max(Math.abs(ref), 1e-9);
+    const err = Math.abs(v - ref)/scale;
+    const ok = isFinite(v) && err <= tol;
+    allOk = allOk && ok;
+    lines.push(`<div>${f.label}: informado ${fmt(v,4)} · esperado ${fmt(ref,4)} · erro relativo ${(err*100).toFixed(2)}% ${ok ? '<span class="tag ok">ok</span>' : '<span class="tag err">fora da tolerância</span>'}</div>`);
+  }
+  $("#gFeedback").innerHTML = `
+    <div class="msg ${allOk ? 'ok' : 'warn'}">${allOk ? "✔ Resposta correta." : "✘ Verifique os valores."}</div>
+    <div class="mono">${lines.join("")}</div>`;
+
+  APP.game.hist.unshift({
+    seed: cur.seed, level: cur.level, ok: allOk,
+    quando: new Date().toLocaleString('pt-BR')
+  });
+  APP.game.hist = APP.game.hist.slice(0, 30);
+  renderGameHistory();
+  saveState();
+}
+
+function renderGameHistory(){
+  const h = APP.game.hist;
+  if (!h.length){ $("#gHist").innerHTML = `<p class="sub">Nenhuma tentativa registrada.</p>`; return; }
+  const acertos = h.filter(x=>x.ok).length;
+  $("#gHist").innerHTML = `
+    <div class="msg info">${acertos} acerto(s) em ${h.length} tentativa(s) — aproveitamento ${(100*acertos/h.length).toFixed(0)}%</div>
+    <div class="tbl-wrap"><table><thead><tr><th>Quando</th><th>Nível</th><th>Semente</th><th>Resultado</th></tr></thead><tbody>
+    ${h.map(x=>`<tr><td>${x.quando}</td><td>${x.level}</td><td>${x.seed}</td><td>${x.ok?'<span class="tag ok">acerto</span>':'<span class="tag err">erro</span>'}</td></tr>`).join("")}
+    </tbody></table></div>`;
+}
+
+/* ============================================================================
+   TESTES
+   ============================================================================ */
+function approx(a, b, tol=1e-6){
+  const scale = Math.max(Math.abs(a), Math.abs(b), 1e-9);
+  return Math.abs(a-b)/scale <= tol;
+}
+
+function runTests(){
+  const out = [];
+  const T = (nome, cond, detalhe) => out.push({nome, ok: !!cond, detalhe});
+
+  // Caso 1 — forças opostas
+  try{
+    const r = ForceSolver.solve([
+      {nome:"F1", F:10, ang:0,   Fz:0, x:0,y:0,z:0},
+      {nome:"F2", F:10, ang:180, Fz:0, x:0,y:0,z:0}
+    ]);
+    T("Caso 1 — Forças horizontais opostas (R = 0)", approx(r.Rm, 0, 1e-9), `|R| = ${r.Rm.toExponential(3)} kN`);
+  } catch(e){ T("Caso 1", false, e.message); }
+
+  // Caso 2 — viga biapoiada, carga central
+  try{
+    const r = BeamSolver.solve({L:6, supports:[{x:0,type:"pin"},{x:6,type:"roller"}], loads:[{t:"point", x:3, Fx:0, Fy:-12}]});
+    const Ra = r.reactions.find(x=>x.kind==="Ry" && x.x===0).value;
+    const Rb = r.reactions.find(x=>x.kind==="Ry" && x.x===6).value;
+    T("Caso 2 — Viga biapoiada 6 m, 12 kN ao centro",
+      approx(Ra,6) && approx(Rb,6) && approx(r.extremes.M.max, 18, 1e-4),
+      `Ra = ${fmt(Ra,4)} kN · Rb = ${fmt(Rb,4)} kN · M_máx = ${fmt(r.extremes.M.max,4)} kN·m`);
+  } catch(e){ T("Caso 2", false, e.message); }
+
+  // Caso 3 — viga biapoiada, carga distribuída
+  try{
+    const r = BeamSolver.solve({L:5, supports:[{x:0,type:"pin"},{x:5,type:"roller"}], loads:[{t:"udl", x1:0, x2:5, w1:4, w2:4}]});
+    const Ra = r.reactions.find(x=>x.kind==="Ry" && x.x===0).value;
+    const Rb = r.reactions.find(x=>x.kind==="Ry" && x.x===5).value;
+    T("Caso 3 — Viga biapoiada 5 m, 4 kN/m",
+      approx(Ra,10) && approx(Rb,10) && approx(r.extremes.M.max, 12.5, 1e-4),
+      `Ra = ${fmt(Ra,4)} kN · Rb = ${fmt(Rb,4)} kN · M_máx = ${fmt(r.extremes.M.max,4)} kN·m`);
+  } catch(e){ T("Caso 3", false, e.message); }
+
+  // Caso 4 — balanço com carga na extremidade
+  try{
+    const r = BeamSolver.solve({L:3, supports:[{x:0,type:"fixed"}], loads:[{t:"point", x:3, Fx:0, Fy:-5}]});
+    const Ry = r.reactions.find(x=>x.kind==="Ry").value;
+    const M  = r.reactions.find(x=>x.kind==="M").value;
+    T("Caso 4 — Balanço 3 m, 5 kN na extremidade",
+      approx(Ry,5) && approx(M,15),
+      `Ry = ${fmt(Ry,4)} kN · M_engaste = ${fmt(M,4)} kN·m`);
+  } catch(e){ T("Caso 4", false, e.message); }
+
+  // Caso 5 — treliça triangular
+  try{
+    const model = {
+      nodes:[{x:0,y:0},{x:4,y:0},{x:2,y:3}],
+      bars:[{i:0,j:1},{i:0,j:2},{i:1,j:2}],
+      supports:[{node:0,type:"pin"},{node:1,type:"roller-y"}],
+      loads:[{node:2, Fx:0, Fy:-10}]
+    };
+    const r = TrussSolver.solve(model);
+    const TAB = r.barForces[0], TAC = r.barForces[1], TBC = r.barForces[2];
+    const esperadoAC = -10*Math.sqrt(13)/6;
+    T("Caso 5 — Treliça triangular isostática (10 kN no vértice)",
+      r.ok && approx(TAB, 10/3, 1e-6) && approx(TAC, esperadoAC, 1e-6) && approx(TBC, esperadoAC, 1e-6),
+      `B_AB = ${fmt(TAB,4)} kN · B_AC = ${fmt(TAC,4)} kN · B_BC = ${fmt(TBC,4)} kN (esperado 3,3333 / −6,0093)`);
+  } catch(e){ T("Caso 5", false, e.message); }
+
+  // Caso 6 — carga inclinada em viga biapoiada
+  try{
+    const r = BeamSolver.solve({L:4, supports:[{x:0,type:"pin"},{x:4,type:"roller"}], loads:[{t:"point", x:2, Fx:6, Fy:-8}]});
+    const Rx = r.reactions.find(x=>x.kind==="Rx").value;
+    const Ra = r.reactions.find(x=>x.kind==="Ry" && x.x===0).value;
+    const Rb = r.reactions.find(x=>x.kind==="Ry" && x.x===4).value;
+    T("Caso 6 — Viga biapoiada 4 m com carga inclinada (6; −8) kN ao centro",
+      approx(Rx,-6) && approx(Ra,4) && approx(Rb,4),
+      `Rx = ${fmt(Rx,4)} kN · Ra = ${fmt(Ra,4)} kN · Rb = ${fmt(Rb,4)} kN`);
+  } catch(e){ T("Caso 6", false, e.message); }
+
+  // Caso 7 — momento concentrado
+  try{
+    const r = BeamSolver.solve({L:4, supports:[{x:0,type:"pin"},{x:4,type:"roller"}], loads:[{t:"moment", x:0, M:10}]});
+    const Ra = r.reactions.find(x=>x.kind==="Ry" && x.x===0).value;
+    const Rb = r.reactions.find(x=>x.kind==="Ry" && x.x===4).value;
+    T("Caso 7 — Viga biapoiada 4 m com momento de 10 kN·m em x = 0",
+      approx(Ra, -2.5) && approx(Rb, 2.5),
+      `Ra = ${fmt(Ra,4)} kN · Rb = ${fmt(Rb,4)} kN`);
+  } catch(e){ T("Caso 7", false, e.message); }
+
+  // Caso 8 — detecção de mecanismo
+  try{
+    const r = BeamSolver.solve({L:4, supports:[{x:0,type:"roller"}], loads:[{t:"point", x:2, Fx:0, Fy:-10}]});
+    T("Caso 8 — Detecção de mecanismo (apenas 1 apoio móvel)", r.ok === false, r.ok ? "não detectou o mecanismo" : r.msg.slice(0,90) + "…");
+  } catch(e){ T("Caso 8", false, e.message); }
+
+  // Caso 9 — detecção de hiperestaticidade
+  try{
+    const r = BeamSolver.solve({L:4, supports:[{x:0,type:"pin"},{x:2,type:"roller"},{x:4,type:"roller"}], loads:[{t:"point", x:2, Fx:0, Fy:-10}]});
+    T("Caso 9 — Detecção de hiperestaticidade (3 apoios)", r.ok === false, r.ok ? "não detectou" : r.msg.slice(0,90) + "…");
+  } catch(e){ T("Caso 9", false, e.message); }
+
+  // Caso 10 — momento vetorial 3D
+  try{
+    const r = ForceSolver.solve([{nome:"F", F:10, ang:0, Fz:0, x:0, y:3, z:0}]);
+    T("Caso 10 — Momento vetorial M = r × F (r = (0,3,0), F = (10,0,0))",
+      approx(r.Mo[2], -30, 1e-9) && approx(r.Mo[0], 0, 1e-9) && approx(r.Mo[1], 0, 1e-9),
+      `M_O = (${fmt(r.Mo[0],4)}; ${fmt(r.Mo[1],4)}; ${fmt(r.Mo[2],4)}) kN·m`);
+  } catch(e){ T("Caso 10", false, e.message); }
+
+  // Caso 11 — determinante singular
+  try{
+    const s = solveLinear([[1,2],[2,4]], [1,2]);
+    T("Caso 11 — Detecção de matriz singular", s.ok === false, s.ok ? "não detectou" : s.msg);
+  } catch(e){ T("Caso 11", false, e.message); }
+
+  const pass = out.filter(t=>t.ok).length;
+  const total = out.length;
+
+  $("#testOut").innerHTML = `
+    <div class="msg ${pass === total ? 'ok' : 'err'}">
+      <strong>${pass}/${total} testes aprovados.</strong> ${pass === total ? "Motor validado para os casos de referência." : "Existem falhas — verifique abaixo."}
+    </div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Teste</th><th>Status</th><th>Detalhe</th></tr></thead>
+      <tbody>
+        ${out.map(t=>`<tr><td>${t.nome}</td><td>${t.ok ? '<span class="tag ok">aprovado</span>' : '<span class="tag err">falhou</span>'}</td><td class="mono" style="font-size:11.5px">${t.detalhe || ""}</td></tr>`).join("")}
+      </tbody>
+    </table></div>`;
+  return {pass, total, out};
+}
+
+/* ============================================================================
+   RELATÓRIO / EXPORTAÇÃO
+   ============================================================================ */
+function updateReportSummary(){
+  const parts = [];
+  parts.push(`<div class="kv">
+    <div class="k">Motor de cálculo</div><div class="v">v${CALC_VERSION}</div>
+    <div class="k">Sistema de unidades</div><div class="v">SI (kN, m, kN·m)</div>
+    <div class="k">Projeto</div><div class="v">${$("#rpName").value || "—"}</div>
+    <div class="k">Responsável</div><div class="v">${$("#rpOwner").value || "—"}</div>
+    <div class="k">Data</div><div class="v">${$("#rpDate").value || "—"}</div>
+  </div>`);
+
+  if (APP.beamResult && APP.beamResult.ok){
+    const r = APP.beamResult;
+    parts.push(`<h3>Viga</h3><div class="kv">
+      <div class="k">Comprimento</div><div class="v">${fmt(APP.beam.L,3)} m</div>
+      ${r.reactions.map(x=>`<div class="k">${x.label} (${x.kind})</div><div class="v">${fmt(x.value,3)} ${x.kind==='M'?'kN·m':'kN'}</div>`).join("")}
+      <div class="k">V máx</div><div class="v">${fmt(r.extremes.V.max,3)} kN</div>
+      <div class="k">M máx</div><div class="v">${fmt(r.extremes.M.max,3)} kN·m</div>
+      <div class="k">M mín</div><div class="v">${fmt(r.extremes.M.min,3)} kN·m</div>
+    </div>`);
+  }
+  if (APP.trussResult && APP.trussResult.ok){
+    const r = APP.trussResult;
+    parts.push(`<h3>Treliça</h3><div class="kv">
+      <div class="k">Barras</div><div class="v">${APP.truss.bars.length}</div>
+      <div class="k">Nós</div><div class="v">${APP.truss.nodes.length}</div>
+      <div class="k">Resíduo nodal máximo</div><div class="v">${r.maxRes.toExponential(2)} kN</div>
+    </div>`);
+  }
+  if (APP.forceResult){
+    const f = APP.forceResult;
+    parts.push(`<h3>Forças</h3><div class="kv">
+      <div class="k">|R|</div><div class="v">${fmt(f.Rm,3)} kN</div>
+      <div class="k">M_O</div><div class="v">(${fmt(f.Mo[0],2)}; ${fmt(f.Mo[1],2)}; ${fmt(f.Mo[2],2)}) kN·m</div>
+    </div>`);
+  }
+  parts.push(`<div class="msg warn" style="margin-top:12px">
+    Este relatório documenta uma <strong>análise estática idealizada</strong>. Não constitui projeto estrutural executivo,
+    não substitui verificações normativas de resistência, estabilidade ou deformação e não possui responsabilidade técnica.
+  </div>`);
+  $("#rpSummary").innerHTML = parts.join("");
+}
+
+function download(filename, content, mime){
+  const blob = new Blob([content], {type: mime || "text/plain;charset=utf-8"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 400);
+}
+
+function exportCSV(){
+  const lines = [];
+  lines.push("APavan Estatica 3D - exportacao de resultados");
+  lines.push("motor;" + CALC_VERSION);
+  lines.push("");
+  if (APP.beamResult && APP.beamResult.ok){
+    const r = APP.beamResult;
+    lines.push("VIGA - REACOES");
+    lines.push("vinculo;tipo;x_m;valor;unidade");
+    r.reactions.forEach(x=>lines.push(`${x.label};${x.kind};${fmt(x.x,3)};${fmt(x.value,6)};${x.kind==='M'?'kN.m':'kN'}`));
+    lines.push("");
+    lines.push("VIGA - ESFORCOS INTERNOS");
+    lines.push("x_m;N_kN;V_kN;M_kN.m");
+    r.samples.x.forEach((x,i)=>{
+      lines.push(`${x.toFixed(4)};${r.samples.N[i].toFixed(6)};${r.samples.V[i].toFixed(6)};${r.samples.M[i].toFixed(6)}`);
+    });
+    lines.push("");
+  }
+  if (APP.trussResult && APP.trussResult.ok){
+    const r = APP.trussResult;
+    lines.push("TRELIÇA - ESFORCOS AXIAIS".normalize("NFD").replace(/[\u0300-\u036f]/g,""));
+    lines.push("barra;no_i;no_j;comprimento_m;esforco_kN;estado");
+    APP.truss.bars.forEach((b,i)=>{
+      const T = r.barForces[i];
+      const est = Math.abs(T)<1e-7 ? "nula" : T>0 ? "tracao" : "compressao";
+      lines.push(`B${i+1};N${b.i+1};N${b.j+1};${fmt(r.geo[i].L,4)};${T.toFixed(6)};${est}`);
+    });
+    lines.push("");
+    lines.push("REACOES");
+    r.reactions.forEach(x=>lines.push(`${x.label};${x.dir};${fmt(x.value,6)};kN`));
+  }
+  if (!lines.length){ toast("Nada para exportar — execute um cálculo."); return; }
+  download("apavan-resultados.csv", "\uFEFF" + lines.join("\n"), "text/csv;charset=utf-8");
+  toast("CSV exportado.");
+}
+
+function projectJSON(){
+  return {
+    app: "APavan Estática 3D",
+    calcVersion: CALC_VERSION,
+    exportedAt: new Date().toISOString(),
+    meta: {
+      nome: $("#rpName").value,
+      responsavel: $("#rpOwner").value,
+      data: $("#rpDate").value,
+      observacoes: $("#rpNotes").value
+    },
+    forces: APP.forces,
+    beam: APP.beam,
+    truss: APP.truss,
+    f3: APP.f3,
+    game: APP.game
+  };
+}
+
+function loadProjectJSON(obj){
+  try{
+    if (!obj || obj.app !== "APavan Estática 3D") throw new Error("Arquivo não reconhecido como projeto APavan.");
+    if (obj.meta){
+      $("#rpName").value = obj.meta.nome || "";
+      $("#rpOwner").value = obj.meta.responsavel || "";
+      $("#rpDate").value = obj.meta.data || "";
+      $("#rpNotes").value = obj.meta.observacoes || "";
+    }
+    if (Array.isArray(obj.forces)) APP.forces = obj.forces;
+    if (obj.beam) APP.beam = obj.beam;
+    if (obj.truss) APP.truss = obj.truss;
+    if (Array.isArray(obj.f3)) APP.f3 = obj.f3;
+    if (obj.game && Array.isArray(obj.game.hist)) APP.game = obj.game;
+
+    APP.beamResult = null; APP.trussResult = null; APP.forceResult = null; APP.f3Result = null;
+    syncUIFromModel();
+    toast("Projeto carregado.");
+  } catch(e){
+    toast("Erro: " + e.message);
+  }
+}
+
+/* ============================================================================
+   PERSISTÊNCIA LOCAL
+   ============================================================================ */
+const LS_KEY = "apavan-estatica-3d-v1";
+let saveTimer = null;
+function saveState(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(()=>{
+    try{
+      localStorage.setItem(LS_KEY, JSON.stringify({
+        theme: APP.theme,
+        beam: APP.beam, truss: APP.truss, forces: APP.forces, f3: APP.f3,
+        game: APP.game,
+        meta: {
+          nome: $("#rpName").value, responsavel: $("#rpOwner").value,
+          data: $("#rpDate").value, observacoes: $("#rpNotes").value
         }
+      }));
+    } catch(e){ /* quota / modo privado */ }
+  }, 400);
+}
+function loadState(){
+  try{
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return false;
+    const s = JSON.parse(raw);
+    if (s.theme) setTheme(s.theme);
+    if (Array.isArray(s.forces)) APP.forces = s.forces;
+    if (s.beam) APP.beam = s.beam;
+    if (s.truss) APP.truss = s.truss;
+    if (Array.isArray(s.f3)) APP.f3 = s.f3;
+    if (s.game) APP.game = s.game;
+    if (s.meta){
+      $("#rpName").value = s.meta.nome || "";
+      $("#rpOwner").value = s.meta.responsavel || "";
+      $("#rpDate").value = s.meta.data || "";
+      $("#rpNotes").value = s.meta.observacoes || "";
+    }
+    return true;
+  } catch(e){ return false; }
+}
 
-        function setFrequency(n) {
-            document.querySelectorAll('.freq-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(`freq-${n}`).classList.add('active');
-            const container = document.getElementById('time-inputs');
-            container.innerHTML = '';
-            for(let i = 1; i <= n; i++) {
-                container.innerHTML += `
-                    <div class="card-med">
-                        <label class="text-[9px] font-black text-slate-400 uppercase ml-1">Horário da Dose ${i}</label>
-                        <input type="time" required class="med-time w-full p-3 bg-slate-100 rounded-xl text-lg font-bold outline-none border-none">
-                    </div>`;
-            }
-        }
+/* ============================================================================
+   MODELOS PADRÃO
+   ============================================================================ */
+function defaultBeam(){
+  return {
+    L: 6,
+    supports: [{x:0, type:"pin"}, {x:6, type:"roller"}],
+    loads: [{t:"point", x:3, Fx:0, Fy:-12}]
+  };
+}
+function defaultTruss(){
+  return {
+    nodes: [{x:0,y:0},{x:4,y:0},{x:2,y:3}],
+    bars:  [{i:0,j:1},{i:0,j:2},{i:1,j:2}],
+    supports: [{node:0, type:"pin"}, {node:1, type:"roller-y"}],
+    loads: [{node:2, Fx:0, Fy:-10}]
+  };
+}
 
-        document.getElementById('form-medication').addEventListener('submit', (e) => {
-            e.preventDefault();
-            const timeInputs = document.querySelectorAll('.med-time');
-            const groupId = "G_" + Date.now();
-            
-            const rawTel = document.getElementById('vendorTel').value;
-            const cleanTel = rawTel.replace(/\D/g, '');
-            
-            let siteUrl = document.getElementById('vendorUrl').value;
-            if (!siteUrl && document.getElementById('vendorName').value.toUpperCase().includes('CIMED')) {
-                siteUrl = 'https://www.cimed.com.br';
-            }
+/* ============================================================================
+   SINCRONIZAÇÃO DE UI
+   ============================================================================ */
+function syncUIFromModel(){
+  $("#beamL").value = APP.beam.L;
+  renderSupports();
+  renderLoads();
+  renderForceList();
+  renderTrussTables();
+  renderF3List();
+  drawBeamAll();
+  drawTruss();
+  draw3D();
+  drawForces();
+  updateReportSummary();
+}
 
-            const commonData = {
-                groupId: groupId,
-                patientName: document.getElementById('patientName').value.toUpperCase(),
-                name: document.getElementById('name').value.toUpperCase(),
-                dose: document.getElementById('dose').value,
-                stock: parseInt(document.getElementById('stock').value),
-                startDate: document.getElementById('startDate').value,
-                vendorName: document.getElementById('vendorName').value || 'CIMED',
-                vendorAddr: document.getElementById('vendorAddr').value || 'Não informado',
-                vendorTel: rawTel || 'Não informado',
-                vendorWhatsApp: cleanTel,
-                vendorUrl: siteUrl,
-                takenToday: false
-            };
-            
-            timeInputs.forEach(input => {
-                meds.push({ ...commonData, id: "ID_" + Math.random().toString(36).substr(2, 9), time: input.value });
-            });
+/* ============================================================================
+   NAVEGAÇÃO
+   ============================================================================ */
+function switchView(name){
+  $$("#tabs button").forEach(b=>b.classList.toggle("active", b.dataset.view === name));
+  $$("section.view").forEach(s=>s.classList.toggle("active", s.id === "view-" + name));
+  // redesenhar canvas (clientWidth é 0 quando oculto)
+  requestAnimationFrame(()=>{
+    if (name === "beam") drawBeamAll();
+    if (name === "truss") drawTruss();
+    if (name === "space") draw3D();
+    if (name === "forces") drawForces();
+    if (name === "report") updateReportSummary();
+  });
+  window.scrollTo({top:0, behavior:"smooth"});
+}
 
-            saveAndRender();
-            closeModal();
-            showToast("✅ TRATAMENTO INICIADO!");
-        });
+/* ============================================================================
+   TEMA
+   ============================================================================ */
+function setTheme(t){
+  APP.theme = t;
+  document.documentElement.setAttribute("data-theme", t);
+  refreshPalette();
+  requestAnimationFrame(()=>{ drawBeamAll(); drawTruss(); draw3D(); drawForces(); });
+}
 
-        function takeDose(id) {
-            const index = meds.findIndex(m => m.id === id);
-            if (index === -1) return;
-            const gId = meds[index].groupId;
-            meds.forEach(m => {
-                if (m.groupId === gId) {
-                    m.stock = Math.max(0, m.stock - 1);
-                    if (m.id === id) m.takenToday = true;
-                }
-            });
-            saveAndRender();
-            showToast(`💊 DOSE REGISTADA!`);
-            if (navigator.vibrate) navigator.vibrate(60);
-        }
+/* ============================================================================
+   EVENTOS
+   ============================================================================ */
+function bindEvents(){
+  $$("#tabs button").forEach(b=>{
+    b.addEventListener("click", ()=> switchView(b.dataset.view));
+  });
 
-        // Função para desfazer caso tenha clicado errado
-        function undoDose(id) {
-            if (confirm("Deseja desmarcar esta dose? O stock será devolvido.")) {
-                const index = meds.findIndex(m => m.id === id);
-                if (index === -1) return;
-                const gId = meds[index].groupId;
-                meds.forEach(m => {
-                    if (m.groupId === gId) {
-                        m.stock += 1;
-                        if (m.id === id) m.takenToday = false;
-                    }
-                });
-                saveAndRender();
-                showToast(`↩️ DOSE CANCELADA!`);
-            }
-        }
+  $("#btnTheme").addEventListener("click", ()=>{
+    setTheme(APP.theme === "dark" ? "light" : "dark");
+    saveState();
+  });
 
-        function deleteGroup(gId) {
-            if (confirm("Remover este medicamento e todas as suas doses?")) {
-                meds = meds.filter(m => m.groupId !== gId);
-                saveAndRender();
-            }
-        }
+  /* ----- forças ----- */
+  $("#btnAddForce").addEventListener("click", ()=>{
+    readForces();
+    APP.forces.push({nome:"F"+(APP.forces.length+1), F:10, ang:0, Fz:0, x:0, y:0, z:0});
+    renderForceList(); saveState();
+  });
+  $("#btnSolveForces").addEventListener("click", ()=>{
+    readForces();
+    APP.forceResult = ForceSolver.solve(APP.forces);
+    const r = APP.forceResult;
+    let html = `<h3>Componentes</h3><div class="tbl-wrap"><table>
+      <thead><tr><th>Força</th><th class="num">Fx</th><th class="num">Fy</th><th class="num">Fz</th><th class="num">|F|</th></tr></thead><tbody>`;
+    r.rows.forEach(x=>{
+      html += `<tr><td>${x.nome}</td><td class="num">${fmt(x.Fx,3)}</td><td class="num">${fmt(x.Fy,3)}</td><td class="num">${fmt(x.Fz,3)}</td><td class="num">${fmt(x.Fm,3)}</td></tr>`;
+    });
+    html += `</tbody></table></div>`;
+    html += `<h3>Resultante</h3><div class="kv">
+      <div class="k">Rx</div><div class="v">${fmt(r.R[0],3)} kN</div>
+      <div class="k">Ry</div><div class="v">${fmt(r.R[1],3)} kN</div>
+      <div class="k">Rz</div><div class="v">${fmt(r.R[2],3)} kN</div>
+      <div class="k">|R|</div><div class="v">${fmt(r.Rm,3)} kN</div>
+      <div class="k">Ângulo (plano XY)</div><div class="v">${fmt(r.angXY,2)}°</div>
+    </div>`;
+    html += `<h3>Momento em relação à origem</h3><div class="kv">
+      <div class="k">Mx</div><div class="v">${fmt(r.Mo[0],3)} kN·m</div>
+      <div class="k">My</div><div class="v">${fmt(r.Mo[1],3)} kN·m</div>
+      <div class="k">Mz</div><div class="v">${fmt(r.Mo[2],3)} kN·m</div>
+      <div class="k">|M|</div><div class="v">${fmt(r.Mom,3)} kN·m</div>
+    </div>`;
+    html += `<h3>Momento e braço por força</h3><div class="tbl-wrap"><table>
+      <thead><tr><th>Força</th><th class="num">Mx</th><th class="num">My</th><th class="num">Mz</th><th class="num">Braço d</th></tr></thead><tbody>`;
+    r.rows.forEach(x=>{
+      html += `<tr><td>${x.nome}</td><td class="num">${fmt(x.M[0],3)}</td><td class="num">${fmt(x.M[1],3)}</td><td class="num">${fmt(x.M[2],3)}</td><td class="num">${fmt(x.braco,3)} m</td></tr>`;
+    });
+    html += `</tbody></table></div>`;
+    html += `<div class="msg info" style="margin-top:10px">
+      <strong>Sistema força-binário equivalente na origem:</strong> R = (${fmt(r.R[0],2)}; ${fmt(r.R[1],2)}; ${fmt(r.R[2],2)}) kN
+      e binário M = (${fmt(r.Mo[0],2)}; ${fmt(r.Mo[1],2)}; ${fmt(r.Mo[2],2)}) kN·m.</div>`;
+    $("#forceOut").innerHTML = html;
+    drawForces();
+    updateReportSummary();
+    saveState();
+  });
 
-        function render() {
-            const container = document.getElementById('med-groups-container');
-            const alertArea = document.getElementById('stock-alerts');
-            const alertList = document.getElementById('low-stock-list');
-            container.innerHTML = ''; alertList.innerHTML = '';
-            const todayStr = new Date().toISOString().split('T')[0];
+  /* ----- vigas ----- */
+  $("#btnAddSupport").addEventListener("click", ()=>{
+    readBeam();
+    APP.beam.supports.push({x: APP.beam.L, type:"roller"});
+    renderSupports();
+  });
+  $("#btnAddLoad").addEventListener("click", ()=>{
+    readBeam();
+    APP.beam.loads.push({t:"point", x: APP.beam.L/2, Fx:0, Fy:-10});
+    renderLoads();
+  });
+  $("#btnBeamExample").addEventListener("click", ()=>{
+    APP.beam = defaultBeam();
+    $("#beamL").value = 6;
+    $("#beamSelf").checked = false;
+    renderSupports(); renderLoads();
+    solveBeam();
+  });
+  $("#btnBeamClear").addEventListener("click", ()=>{
+    readBeam();
+    APP.beam.loads = [];
+    renderLoads(); drawBeam();
+  });
+  $("#btnSolveBeam").addEventListener("click", solveBeam);
+  $("#beamL").addEventListener("input", ()=>{ APP.beam.L = Math.max(0.1, num($("#beamL"), 6)); drawBeam(); });
+  $("#beamSelf").addEventListener("change", ()=>{ readBeam(); drawBeam(); });
+  $("#beamSelfQ").addEventListener("input", ()=>{ readBeam(); drawBeam(); });
 
-            if (meds.length === 0) {
-                container.innerHTML = `<div class="text-center py-24 text-slate-300 font-black uppercase tracking-[0.2em] px-10 text-xs">CIMED: Sem medicamentos ativos.</div>`;
-                alertArea.classList.add('hidden'); return;
-            }
+  /* ----- treliças ----- */
+  $("#btnAddNode").addEventListener("click", ()=>{
+    const t = APP.truss;
+    const last = t.nodes[t.nodes.length-1] || {x:0,y:0};
+    t.nodes.push({x: last.x + 2, y: last.y});
+    renderTrussTables(); drawTruss(); saveState();
+  });
+  $("#btnAddBar").addEventListener("click", ()=>{
+    const t = APP.truss;
+    if (t.nodes.length < 2){ toast("Adicione ao menos dois nós."); return; }
+    t.bars.push({i:0, j:1});
+    renderTrussTables(); drawTruss(); saveState();
+  });
+  $("#btnAddSup").addEventListener("click", ()=>{
+    APP.truss.supports.push({node:0, type:"roller-y"});
+    renderTrussTables(); drawTruss(); saveState();
+  });
+  $("#btnAddTrussLoad").addEventListener("click", ()=>{
+    APP.truss.loads.push({node:0, Fx:0, Fy:-10});
+    renderTrussTables(); drawTruss(); saveState();
+  });
+  $("#btnTrussExample").addEventListener("click", ()=>{
+    APP.truss = defaultTruss();
+    APP.trussResult = null;
+    renderTrussTables(); drawTruss(); solveTruss();
+  });
+  $("#btnSolveTruss").addEventListener("click", solveTruss);
 
-            // --- 1. Alertas de Reposição ---
-            const seenGroups = new Set();
-            let hasLow = false;
-            meds.forEach(m => {
-                if (!seenGroups.has(m.groupId) && m.stock <= 5) {
-                    hasLow = true;
-                    const msg = encodeURIComponent(`Olá! Preciso repor o medicamento ${m.name} para o paciente ${m.patientName}.`);
-                    const waUrl = m.vendorWhatsApp ? `https://wa.me/${m.vendorWhatsApp}?text=${msg}` : '#';
+  /* ----- 3D ----- */
+  $("#btnAddF3").addEventListener("click", ()=>{
+    readF3();
+    APP.f3.push({nome:"F"+(APP.f3.length+1), Fx:10, Fy:0, Fz:0, x:0, y:0, z:0});
+    renderF3List(); saveState();
+  });
+  $("#btnSolveF3").addEventListener("click", ()=>{
+    readF3();
+    const forces = APP.f3.map(f=>({
+      nome: f.nome, F: Math.hypot(f.Fx,f.Fy),
+      ang: Math.atan2(f.Fy,f.Fx)*180/Math.PI,
+      Fz: f.Fz, x: f.x, y: f.y, z: f.z
+    }));
+    const r = ForceSolver.solve(forces);
+    APP.f3Result = r;
+    let html = `<h3>Resultante</h3><div class="kv">
+      <div class="k">Rx</div><div class="v">${fmt(r.R[0],3)} kN</div>
+      <div class="k">Ry</div><div class="v">${fmt(r.R[1],3)} kN</div>
+      <div class="k">Rz</div><div class="v">${fmt(r.R[2],3)} kN</div>
+      <div class="k">|R|</div><div class="v">${fmt(r.Rm,3)} kN</div>
+    </div>
+    <h3>Momento na origem</h3><div class="kv">
+      <div class="k">Mx</div><div class="v">${fmt(r.Mo[0],3)} kN·m</div>
+      <div class="k">My</div><div class="v">${fmt(r.Mo[1],3)} kN·m</div>
+      <div class="k">Mz</div><div class="v">${fmt(r.Mo[2],3)} kN·m</div>
+      <div class="k">|M|</div><div class="v">${fmt(r.Mom,3)} kN·m</div>
+    </div>`;
+    $("#f3Out").innerHTML = html;
+    draw3D();
+    saveState();
+  });
 
-                    alertList.innerHTML += `
-                        <div class="bg-white border-2 border-red-200 p-5 rounded-[2rem] shadow-sm space-y-3 card-med">
-                            <div class="flex flex-col border-b pb-2">
-                                <span class="text-[9px] font-black text-indigo-500 uppercase tracking-widest mb-1">PACIENTE: ${m.patientName}</span>
-                                <div class="flex justify-between items-center">
-                                    <span class="font-black text-red-600 uppercase italic text-lg">${m.name}</span>
-                                    <span class="bg-red-600 text-white px-3 py-1 rounded-full text-[10px] font-black uppercase">STOCK: ${m.stock}</span>
-                                </div>
-                            </div>
-                            <div class="text-[11px] text-slate-500 font-bold space-y-2">
-                                <p class="flex items-center gap-1">🏷️ <span class="text-slate-800">${m.vendorName}</span></p>
-                                <div class="flex flex-col gap-2 pt-2">
-                                    <div class="flex items-center justify-between">
-                                        <p class="flex items-center gap-1 text-[9px]">📞 <span class="text-slate-800">${m.vendorTel}</span></p>
-                                        ${m.vendorWhatsApp ? `<a href="${waUrl}" target="_blank" class="whatsapp-link border border-[#25D366] px-3 py-1 rounded-lg">WHATSAPP</a>` : ''}
-                                    </div>
-                                    ${m.vendorUrl ? `<a href="${m.vendorUrl}" target="_blank" class="site-link border border-indigo-600 px-3 py-3 rounded-xl justify-center bg-indigo-50 mt-1">🌐 ENTRAR NA LOJA/SITE</a>` : ''}
-                                </div>
-                            </div>
-                        </div>`;
-                }
-                seenGroups.add(m.groupId);
-            });
-            alertArea.classList.toggle('hidden', !hasLow);
+  // câmera 3D
+  (function bind3D(){
+    const cv = $("#cv3d");
+    let dragging = false, lx = 0, ly = 0;
+    const down = e => { dragging = true; lx = (e.touches?e.touches[0]:e).clientX; ly = (e.touches?e.touches[0]:e).clientY; cv.style.cursor = "grabbing"; };
+    const move = e => {
+      if (!dragging) return;
+      const p = e.touches ? e.touches[0] : e;
+      const dx = p.clientX - lx, dy = p.clientY - ly;
+      lx = p.clientX; ly = p.clientY;
+      Cam3D.yaw   -= dx*0.008;
+      Cam3D.pitch  = clamp(Cam3D.pitch + dy*0.008, -1.5, 1.5);
+      draw3D();
+      if (e.cancelable) e.preventDefault();
+    };
+    const up = () => { dragging = false; cv.style.cursor = "grab"; };
+    cv.addEventListener("mousedown", down);
+    window.addEventListener("mousemove", move);
+    window.addEventListener("mouseup", up);
+    cv.addEventListener("touchstart", down, {passive:true});
+    cv.addEventListener("touchmove", move, {passive:false});
+    cv.addEventListener("touchend", up);
+    cv.addEventListener("wheel", e=>{
+      e.preventDefault();
+      Cam3D.zoom = clamp(Cam3D.zoom * (e.deltaY > 0 ? 0.92 : 1.08), 0.25, 6);
+      draw3D();
+    }, {passive:false});
+  })();
 
-            // --- 2. Organização por Medicamentos ---
-            const grouped = meds.reduce((acc, med) => {
-                if (!acc[med.groupId]) acc[med.groupId] = { info: med, doses: [] };
-                acc[med.groupId].doses.push(med);
-                return acc;
-            }, {});
+  /* ----- desafios ----- */
+  $("#gNew").addEventListener("click", newGameExercise);
+  $("#gClearHist").addEventListener("click", ()=>{
+    APP.game.hist = []; renderGameHistory(); saveState();
+  });
 
-            Object.values(grouped).forEach(group => {
-                const info = group.info;
-                if (info.startDate > todayStr) return;
+  /* ----- testes ----- */
+  $("#btnRunTests").addEventListener("click", ()=>{
+    const r = runTests();
+    toast(`${r.pass}/${r.total} testes aprovados`);
+  });
 
-                const groupCard = document.createElement('div');
-                groupCard.className = "space-y-3 card-med";
+  /* ----- relatório ----- */
+  $("#btnPrint").addEventListener("click", ()=>{
+    updateReportSummary();
+    // garante que a aba relatório esteja ativa para impressão
+    window.print();
+  });
+  $("#btnSaveJson").addEventListener("click", ()=>{
+    download("apavan-projeto.json", JSON.stringify(projectJSON(), null, 2), "application/json");
+    toast("Projeto salvo em JSON.");
+  });
+  $("#btnLoadJson").addEventListener("click", ()=> $("#fileJson").click());
+  $("#fileJson").addEventListener("change", e=>{
+    const f = e.target.files[0];
+    if (!f) return;
+    const rd = new FileReader();
+    rd.onload = () => {
+      try{ loadProjectJSON(JSON.parse(rd.result)); }
+      catch(err){ toast("Arquivo JSON inválido."); }
+    };
+    rd.readAsText(f);
+    e.target.value = "";
+  });
+  $("#btnCsv").addEventListener("click", exportCSV);
 
-                groupCard.innerHTML = `
-                    <div class="med-group-header bg-slate-900 text-white p-5 rounded-[2rem] shadow-lg flex justify-between items-center">
-                        <div>
-                            <p class="text-[9px] font-black text-yellow-400 uppercase tracking-[0.2em] mb-1">PACIENTE: ${info.patientName}</p>
-                            <h3 class="text-2xl font-black italic uppercase leading-none">${info.name}</h3>
-                            <div class="flex gap-3 mt-2">
-                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">STOCK: ${info.stock}</span>
-                                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">DOSE: ${info.dose}</span>
-                            </div>
-                        </div>
-                        <button onclick="deleteGroup('${info.groupId}')" class="bg-white/10 p-3 rounded-full hover:bg-red-500/20 transition-colors">
-                            <svg width="20" height="20" fill="white" viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-                        </button>
-                    </div>
-                    <div class="grid grid-cols-1 gap-2 pl-4" id="doses-for-${info.groupId}"></div>
-                `;
+  ["#rpName","#rpOwner","#rpDate","#rpNotes"].forEach(sel=>{
+    $(sel).addEventListener("input", ()=>{ updateReportSummary(); saveState(); });
+  });
 
-                const doseContainer = groupCard.querySelector(`#doses-for-${info.groupId}`);
-                group.doses.sort((a,b) => a.time.localeCompare(b.time)).forEach(dose => {
-                    const p = getPeriodInfo(dose.time);
-                    const taken = dose.takenToday;
-                    
-                    const doseItem = document.createElement('div');
-                    doseItem.className = `flex items-center gap-4 bg-white p-4 rounded-3xl border-2 transition-all ${taken ? 'border-green-100 bg-green-50/20' : 'border-slate-200'}`;
-                    
-                    doseItem.innerHTML = `
-                        <div class="flex-shrink-0 w-16 text-center">
-                            <p class="text-xs font-black text-slate-400 uppercase mb-1">${p.label}</p>
-                            <p class="text-lg font-black text-slate-900">${dose.time}</p>
-                        </div>
-                        <div class="flex-1 h-8 border-l border-slate-100"></div>
-                        <div class="flex-shrink-0">
-                            ${taken ? 
-                                `<button onclick="undoDose('${dose.id}')" class="px-4 py-2 bg-green-500 text-white font-black text-[10px] rounded-xl border border-green-600 uppercase tracking-widest">TOMADA ✓</button>` :
-                                `<button onclick="takeDose('${dose.id}')" class="btn-confirm px-6 bg-yellow-400 text-black font-black text-xs rounded-xl shadow-sm uppercase tracking-widest">TOMAR AGORA</button>`
-                            }
-                        </div>
-                    `;
-                    doseContainer.appendChild(doseItem);
-                });
+  /* redimensionamento */
+  let rzT = null;
+  window.addEventListener("resize", ()=>{
+    clearTimeout(rzT);
+    rzT = setTimeout(()=>{ drawBeamAll(); drawTruss(); draw3D(); drawForces(); }, 160);
+  });
 
-                container.appendChild(groupCard);
-            });
-        }
+  // serviço PWA (necessita dos arquivos externos)
+  if ("serviceWorker" in navigator){
+    navigator.serviceWorker.register("service-worker.js").catch(()=>{
+      /* arquivo ausente — a versão de arquivo único funciona normalmente */
+    });
+  }
+}
 
-        function checkDailyReset() {
-            const today = new Date().toLocaleDateString();
-            if (localStorage.getItem('cimed_day_v13') !== today) {
-                meds.forEach(m => m.takenToday = false);
-                localStorage.setItem('cimed_day_v13', today);
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(meds));
-            }
-        }
+/* ---------- ações de cálculo ---------- */
+function solveBeam(){
+  readBeam();
+  APP.beamResult = BeamSolver.solve(APP.beam);
+  showBeamResults();
+  drawBeamAll();
+  updateReportSummary();
+  saveState();
+  if (APP.beamResult.ok) toast("Viga calculada.");
+  else toast("Modelo não resolvido — veja a mensagem.");
+}
 
-        function openModal() { 
-            document.getElementById('modal-form').classList.remove('hidden');
-            document.getElementById('startDate').value = new Date().toISOString().split('T')[0];
-            setFrequency(1);
-            document.body.style.overflow = 'hidden';
-        }
-        
-        function closeModal() { document.getElementById('modal-form').classList.add('hidden'); document.body.style.overflow = 'auto'; }
-        
-        function showToast(msg) {
-            const t = document.getElementById('toast');
-            t.innerText = msg;
-            t.className = `fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-8 py-4 rounded-full shadow-2xl transition-opacity z-[200] font-black opacity-100 text-center text-xs uppercase`;
-            setTimeout(() => t.classList.replace('opacity-100', 'opacity-0'), 2500);
-        }
+function solveTruss(){
+  APP.trussResult = TrussSolver.solve(APP.truss);
+  showTrussResults();
+  drawTruss();
+  updateReportSummary();
+  saveState();
+  if (APP.trussResult.ok) toast("Treliça calculada.");
+  else toast("Treliça não resolvida — veja a mensagem.");
+}
 
-        window.onload = init;
-    </script>
+/* ============================================================================
+   INICIALIZAÇÃO
+   ============================================================================ */
+(function init(){
+  refreshPalette();
+  APP.beam = defaultBeam();
+  APP.truss = defaultTruss();
+
+  const hoje = new Date().toISOString().slice(0,10);
+  $("#rpDate").value = hoje;
+
+  const restored = loadState();
+
+  renderFundamentos();
+  syncUIFromModel();
+  renderGameHistory();
+  $("#verBadge").textContent = "motor " + CALC_VERSION;
+
+  bindEvents();
+
+  if (!restored){
+    // cálculo inicial demonstrativo
+    APP.beamResult = BeamSolver.solve(APP.beam);
+    showBeamResults();
+    APP.trussResult = TrussSolver.solve(APP.truss);
+    showTrussResults();
+    drawBeamAll(); drawTruss();
+  } else {
+    // reexecuta cálculos silenciosamente
+    APP.beamResult = BeamSolver.solve(APP.beam);
+    showBeamResults();
+    APP.trussResult = TrussSolver.solve(APP.truss);
+    showTrussResults();
+    drawBeamAll(); drawTruss(); draw3D(); drawForces();
+  }
+
+  updateReportSummary();
+  newGameExercise();
+})();
+</script>
 </body>
 </html>
